@@ -3,16 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "nodemon index.js",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start": "NODE_ENV=production node index.js"
   },
   "dependencies": {
+    "clsx": "^1.2.1",
     "eslint": "8.29.0",
     "eslint-config-next": "13.0.6",
     "next": "13.0.6",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "shortid": "^2.2.16",
+    "socket.io": "^4.5.4",
+    "socket.io-client": "^4.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }
