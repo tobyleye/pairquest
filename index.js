@@ -149,13 +149,14 @@ class Room {
       cb(null);
       return;
     }
-    const player = new Player(socket.id, this.players.length, null)
+    const player = new Player(socket.id, this.players.length+1, null)
     this.players.push(player);
     socket.join(this.id);
     socket.room = this;
     let roomInfo = {
       noOfPlayers: this.expectedPlayers,
       gridSize: this.gridSize,
+      id: this.id
     };
     cb(player, roomInfo);
     this.broadcast("update_players", this.players);

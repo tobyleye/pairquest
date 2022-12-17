@@ -1,7 +1,10 @@
-export function BoardLayout({ header, footer, children }) {
+export function BoardLayout({  menu, footer, children }) {
   return (
     <div className="board-layout">
-      <header className="header">{header}</header>
+      <header className="header">
+        <h3>memory</h3>
+        {menu}
+      </header>
       <main className="body">{children}</main>
       <footer className="footer">{footer}</footer>
 
@@ -18,6 +21,9 @@ export function BoardLayout({ header, footer, children }) {
 
         .header {
           padding: 18px 18px 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
 
         .footer {

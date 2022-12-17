@@ -41,6 +41,7 @@ export function Board({ size, items, onItemClick, flipped, opened }) {
           grid-template-columns: repeat(var(--cols), 1fr);
           grid-template-rows: repeat(var(--rows), 1fr);
           gap: 15px;
+          font-size: 22px;
         }
       `}</style>
     </div>

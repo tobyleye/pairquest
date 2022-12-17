@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Board } from "../../components/board";
-import { GameResult } from "../../components/single/game-result";
+import { GameResult } from "../../components/game-result";
 import { useTimer } from "../../hooks";
-import { BoardHeader } from "../../components/single/header";
 import { parseGridSize, generateBoardItems } from "../../utils";
 import { Hud } from "../../components/single/hud";
 import { BoardLayout } from "../../components/board-layout";
+import { BoardMenu } from "../../components/single/menu";
 
 export default function Single() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function Single() {
   const [gameOver, setGameOver] = useState(false);
   const [moves, setMoves] = useState(0);
 
-  const timer = useTimer({ paused: false });
+  const timer = useTimer({ paused: true });
 
   useEffect(() => {
     const size = parseGridSize(gridSize);
@@ -68,8 +68,8 @@ export default function Single() {
 
   return (
     <BoardLayout
-      header={
-        <BoardHeader
+      menu={
+        <BoardMenu
           pauseTimer={timer.pause}
           resumeTimer={timer.resume}
           onRestart={restart}
@@ -77,9 +77,10 @@ export default function Single() {
       }
       footer={<Hud time={timer.formattedTime} moves={moves} />}
     >
-      <div style={{ height: '100%'}}>
+      <div style={{ height: "100%" }}>
         {gameOver && (
           <GameResult
+            showConfetti
             heading="You did it"
             subheading="Game over! Here’s how you got on…"
             results={[

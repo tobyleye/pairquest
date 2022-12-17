@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Board } from "../../components/board";
 import { BoardLayout } from "../../components/board-layout";
-import { GameResult } from "../../components/multi/game-result";
+import { MultiGameResult } from "../../components/multi/game-result";
 import { Hud } from "../../components/multi/hud";
 import { useSocket } from "../../contexts/SocketContext";
 import { Setup } from "../../components/multi/setup";
@@ -107,7 +107,6 @@ export default function Page() {
   }, [socket, id]);
 
   const handleItemClick = (index) => {
-    console.log("tile clicked --", { index, nextPlayer, id: player.id });
     if (player.id !== nextPlayer) {
       return;
     }
@@ -119,11 +118,21 @@ export default function Page() {
     setStartGame(true);
   };
 
+  const leaveRoom = () => {
+    const sure = confirm("are you sure");
+    if (sure) {
+      socket.emit("leave_room");
+      router.push("/");
+    }
+  };
+
   return (
     <BoardLayout
-      header={
+      menu={
         <div>
-          <h1>Memory</h1>
+          <button className="btn" onClick={leaveRoom}>
+            leave room
+          </button>
         </div>
       }
       footer={
@@ -135,7 +144,7 @@ export default function Page() {
         />
       }
     >
-      {gameOver && <GameResult players={players} player={player} />}
+      {gameOver && <MultiGameResult players={players} player={player} />}
 
       {settingUp && (
         <Setup

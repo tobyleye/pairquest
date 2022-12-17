@@ -28,7 +28,7 @@ function MobileMenu({ onRestart, onResume }) {
   );
 }
 
-export function BoardHeader({ onNewGame, onRestart, pauseTimer, resumeTimer }) {
+export function BoardMenu({ onNewGame, onRestart, pauseTimer, resumeTimer }) {
   const [showMenu, setShowMenu] = useState(false);
 
   const openMenu = () => {
@@ -49,15 +49,14 @@ export function BoardHeader({ onNewGame, onRestart, pauseTimer, resumeTimer }) {
 
   return (
     <>
-      {showMenu && (
-        <MobileMenu
-          onNewGame={onNewGame}
-          onRestart={handleRestart}
-          onResume={resume}
-        />
-      )}
-      <div className="header">
-        <h1>memory</h1>
+      <div>
+        {showMenu && (
+          <MobileMenu
+            onNewGame={onNewGame}
+            onRestart={handleRestart}
+            onResume={resume}
+          />
+        )}
         <div className="btns">
           <div className="mobile">
             <button className="btn btn-orange" onClick={openMenu}>
