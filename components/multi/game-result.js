@@ -52,7 +52,8 @@ export function MultiGameResult({ players, player }) {
       }
       results.push({
         label,
-        value: p.matchedPairs,
+        value: `${p.matchedPairs} Pairs`,
+        highlight: isWinner
       });
     }
 

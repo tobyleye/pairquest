@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import { BaseModal } from "./base-modal";
@@ -31,7 +32,7 @@ export function GameResult({
           <div className="results">
             {results.map((item, index) => {
               return (
-                <div key={index} className="result-item">
+                <div key={index} className={clsx("result-item", item.highlight && "highlight")}>
                   {item.label}
                   <span>{item.value}</span>
                 </div>
@@ -69,7 +70,7 @@ export function GameResult({
 
           .results {
             display: grid;
-            grid-gap: 15px;
+            grid-gap: 10px;
             margin-bottom: 20px;
           }
 
@@ -77,6 +78,7 @@ export function GameResult({
             background: var(--subtle-gray);
             color: var(--text-gray);
             display: flex;
+            align-items: center;
             justify-content: space-between;
             padding: 12px 16px;
             border-radius: 8px;
@@ -87,7 +89,16 @@ export function GameResult({
           .result-item span {
             color: var(--gray-2x-dark);
             font-weight: 700;
-            font-size: 16px;
+            font-size: 18px;
+          }
+
+          .result-item.highlight {
+              background: var(--gray-2x-dark);
+              color: white;
+          } 
+
+          .result-item.highlight span{
+            color: inherit;
           }
 
           .btns {
