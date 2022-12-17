@@ -1,14 +1,19 @@
 import { GameResult } from "../game-result";
 
 export function MultiGameResult({ players, player }) {
-  console.log('players:', players)
+
   const getWinners = () => {
     let winners = {}; // id: player
     let highestMatchedPairs = 0;
     for (let p of players) {
       if (p.matchedPairs > highestMatchedPairs) {
+        // we a new player with highest matched pairs 
+        // so we reset winners 
+        winners = {}
         winners[p.id] = p;
         highestMatchedPairs = p.matchedPairs;
+      } else if (p.matchedPairs === highestMatchedPairs) {
+        winners[p.id] = p
       }
     }
     return winners;
@@ -57,9 +62,6 @@ export function MultiGameResult({ players, player }) {
   const winners = getWinners();
   const heading = getResultHeading(winners);
   const results = getResult(winners);
-
-  console.log("results:", results);
-  console.log("winners:", winners);
   
 
   const showConfetti = winners[player.id] !== undefined
