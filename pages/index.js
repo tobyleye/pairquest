@@ -3,6 +3,7 @@ import { useState } from "react";
 import { RadioGroup } from "../components/home/radio-group";
 import { useSocket } from "../contexts/SocketContext";
 import { parseGridSize } from "../utils";
+import { ShamelessPlug } from "../components/shameless-plug";
 
 const defaultState = {
   theme: "numbers",
@@ -10,28 +11,6 @@ const defaultState = {
   gridSize: "4x4",
 };
 
-function Dots() {
-  return (
-    <div className="dots">
-      <span></span>
-      <span></span>
-      <span></span>
-      <style jsx>{`
-        .dots {
-          display: flex;
-          justify-content: center;
-          gap: 4px;
-        }
-        .dots span {
-          width: 6px;
-          height: 6px;
-          border-radius: 99px;
-          background: white;
-        }
-      `}</style>
-    </div>
-  );
-}
 
 export default function Home() {
   const [theme, setTheme] = useState(defaultState.theme);
@@ -117,6 +96,8 @@ export default function Home() {
             </button>
           </div>
         </div>
+
+        <ShamelessPlug />
       </div>
       <style jsx>{`
         .home {
@@ -145,6 +126,30 @@ export default function Home() {
         .form-elements {
           display: grid;
           gap: 25px;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+
+function Dots() {
+  return (
+    <div className="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+      <style jsx>{`
+        .dots {
+          display: flex;
+          justify-content: center;
+          gap: 4px;
+        }
+        .dots span {
+          width: 6px;
+          height: 6px;
+          border-radius: 99px;
+          background: white;
         }
       `}</style>
     </div>

@@ -7,28 +7,30 @@ import { parseGridSize, generateBoardItems } from "../../utils";
 import { Hud } from "../../components/single/hud";
 import { BoardLayout } from "../../components/board-layout";
 import { BoardMenu } from "../../components/single/menu";
+import { flipDelay } from "../../constants";
 
 export default function Single() {
   const router = useRouter();
-  const { gridSize, theme } = router.query;
+  const { gridSize, theme: _theme } = router.query;
   const [boardItems, setBoardItems] = useState([]);
   const [size, setSize] = useState([]);
   const [opened, setOpened] = useState([]);
   const [flippedPair, setFlippedPair] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [moves, setMoves] = useState(0);
-
-  const timer = useTimer({ paused: true });
+  const [theme, setTheme] = useState();
+  const timer = useTimer({ paused: false });
 
   useEffect(() => {
     const size = parseGridSize(gridSize);
-    const boardItems = generateBoardItems(size, theme);
+    const boardItems = generateBoardItems(size, _theme);
     setSize(size);
     setBoardItems(boardItems);
-  }, [gridSize, theme]);
+    setTheme(_theme);
+  }, [gridSize, _theme]);
 
   function restart() {
-    const items = generateBoardItems(size);
+    const items = generateBoardItems(size, _theme);
     setOpened([]);
     setFlippedPair([]);
     setMoves(0);
@@ -50,28 +52,30 @@ export default function Single() {
         const firstItem = boardItems[firstIndex];
         const secondItem = boardItems[secondIndex];
         if (firstItem === secondItem) {
-          setOpened([...opened, firstIndex, secondIndex]);
+          setOpened((opened) => [...opened, firstIndex, secondIndex]);
         }
         setFlippedPair([]);
-      }, 600);
+      }, flipDelay);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flippedPair]);
+  }, [boardItems, flippedPair]);
 
   useEffect(() => {
     if (boardItems.length > 0 && opened.length === boardItems.length) {
-      timer.pause();
-      setGameOver(true);
+      timer.stop();
+      setTimeout(() => {
+        setGameOver(true);
+        // wait one sec
+      }, 1000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [opened]);
+  }, [boardItems.length, opened]);
 
   return (
     <BoardLayout
       menu={
         <BoardMenu
-          pauseTimer={timer.pause}
-          resumeTimer={timer.resume}
+          pauseTimer={timer.stop}
+          resumeTimer={timer.start}
           onRestart={restart}
         />
       }
@@ -92,11 +96,15 @@ export default function Single() {
         )}
 
         <Board
+          // wait until the flipped pair is turned before allowing clicks
+          disabled={flippedPair.length === 2}
           size={size}
           items={boardItems}
           flipped={flippedPair}
           opened={opened}
           onItemClick={handleItemClick}
+          theme={theme}
+          key={boardItems.toString()}
         />
       </div>
     </BoardLayout>

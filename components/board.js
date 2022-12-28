@@ -1,7 +1,7 @@
 import cx from "clsx";
+import { icons } from "../constants";
 
-export function Board({ size, items, onItemClick, flipped, opened }) {
-
+export function Board({ size, items, onItemClick, flipped, opened, theme, disabled }) {
   return (
     <div className="board-container">
       <div
@@ -17,8 +17,12 @@ export function Board({ size, items, onItemClick, flipped, opened }) {
               flipped={flipped.includes(idx)}
               opened={opened.includes(idx)}
               onClick={() => onItemClick(idx)}
+              disabled={disabled}
+              style={{
+                '--animation-delay': `${idx * .01}s`,
+              }}
             >
-              {i}
+              {theme === "icons" ? <span>{icons[i]}</span> : i}
             </Card>
           </div>
         ))}
@@ -48,12 +52,13 @@ export function Board({ size, items, onItemClick, flipped, opened }) {
   );
 }
 
-function Card({ children, flipped, opened, onClick }) {
+function Card({ children, flipped, opened, onClick, style, disabled }) {
   return (
     <div
       onClick={() => {
-        if (!flipped && !opened) onClick();
+        if (!flipped && !opened && !disabled ) onClick();
       }}
+      style={style}
       className={cx(
         "card",
         { "card-flipped": flipped },
@@ -74,6 +79,20 @@ function Card({ children, flipped, opened, onClick }) {
           color: white;
           position: relative;
           perspective: 250px;
+          animation: in .16s ease;
+          animation-delay: var(--animation-delay);
+          animation-fill-mode: both;
+        }
+
+        @keyframes in {
+          0% {
+            transform: scale(0.4);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
         }
 
         .front,

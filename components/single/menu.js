@@ -5,7 +5,7 @@ import { BaseModal } from "../base-modal";
 function MobileMenu({ onRestart, onResume }) {
   const router = useRouter();
   return (
-    <BaseModal open={true} disableCloseOnOverlayClick>
+    <BaseModal open={true}  onOpenChange={() => onResume()}>
       <div className="btns">
         <button className="btn btn-orange" onClick={onRestart}>
           Restart
@@ -13,7 +13,7 @@ function MobileMenu({ onRestart, onResume }) {
         <button className="btn" onClick={() => router.push("/")}>
           New Game
         </button>
-        <button className="btn " onClick={onResume}>
+        <button className="btn" onClick={onResume}>
           Resume Game
         </button>
       </div>

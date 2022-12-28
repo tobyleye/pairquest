@@ -1,20 +1,29 @@
 export function BoardLayout({  menu, footer, children }) {
   return (
-    <div className="board-layout">
+    <div className="screen-layout">
+      <div className="screen-container">
       <header className="header">
-        <h3>memory</h3>
+        <h1>memory</h1>
         {menu}
       </header>
       <main className="body">{children}</main>
       <footer className="footer">{footer}</footer>
 
+      </div>
+
       <style jsx>{`
-        .board-layout {
+        .screen-layout {
           position: absolute;
           top: 0;
           left: 0;
           bottom: 0;
           right: 0;
+        }
+
+        .screen-container {
+          max-width: 940px;
+          height: 100%;
+          margin: auto;
           display: grid;
           grid-template-rows: auto 1fr auto;
         }

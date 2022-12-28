@@ -1,11 +1,24 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect,  useState } from "react";
 import { Board } from "../../components/board";
 import { BoardLayout } from "../../components/board-layout";
 import { MultiGameResult } from "../../components/multi/game-result";
 import { Hud } from "../../components/multi/hud";
 import { useSocket } from "../../contexts/SocketContext";
 import { Setup } from "../../components/multi/setup";
+import { Disconnected } from "../../components/disconnected";
+
+const registerEvents = (socket, events) => {
+  for (let event in events) {
+    socket.on(event, events[event]);
+  }
+}
+
+const removeEvents = (socket, events) => {
+  for (let event in events) {
+    socket.off(event, events[event]);
+  }
+}
 
 export default function Page() {
   const socket = useSocket();
@@ -24,14 +37,27 @@ export default function Page() {
   const [opened, setOpened] = useState([]);
   const [nextPlayer, setNextPlayer] = useState(null);
   const [gameOver, setGameOver] = useState(false);
+  const [disconnected, setDisconnected] = useState(false);
 
   useEffect(() => {
-    const onUpdatePlayers = (players) => {
-      console.log("new player joined", { players });
-      setPlayers(players);
+    const nextPlayerHandler =(player) => {
+      if (nextPlayer !== null) {
+        setTimeout(() => {
+          setNextPlayer(player);
+        }, 600);
+      } else {
+        setNextPlayer(player);
+      }
+    }
+    socket.on("next_player", nextPlayerHandler)
+    return () => {
+      socket.off("next_player", nextPlayerHandler);
     };
+  }, [id, socket, nextPlayer]);
 
-    const onJoinRoom = (player, roomInfo) => {
+
+  useEffect(() => {
+    socket.emit("join_room", id, (player, roomInfo) => {
       if (player && roomInfo) {
         setPlayer(player);
         setRoomInfo(roomInfo);
@@ -39,74 +65,46 @@ export default function Page() {
         setRoomNotFound(true);
       }
       setLoaded(true);
-    };
-
-    socket.emit("join_room", id, onJoinRoom);
-
-    // events
-    const onStartGame = ({ boardItems }) => {
-      setStartCountdown(true);
-      setBoardItems(boardItems);
-    };
+    });
 
     const events = {
-      update_players: onUpdatePlayers,
-      start_game: onStartGame,
-      next_player(player) {
-        if (nextPlayer !== null) {
-          setTimeout(() => {
-            setNextPlayer(player);
-          }, 600);
-        } else {
-          setNextPlayer(player);
-        }
+      update_players: (players) => {
+        setPlayers(players);
       },
-      update_flipped_pairs(flippedPair, delay) {
+      start_game: ({ boardItems }) => {
+        setStartCountdown(true);
+        setBoardItems(boardItems);
+      },
+      update_flipped_pairs: (flippedPair, delay) => {
+        console.log({ flippedPair });
         let timeout = delay ? 600 : 0;
         setTimeout(() => {
           setFlippedPair(flippedPair);
         }, timeout);
       },
-      update_opened: setOpened,
-      disconnect() {
-        console.log("disconnect!");
-        if (id === "public") {
-          window.location.reload();
-        }
+      update_opened: (opened) => setOpened(opened),
+      disconnect: () => {
+        setDisconnected(true);
       },
-      player_leave(player) {
+      player_leave: (player) => {
         console.log(`player ${player?.id} left`);
-        // if (id === 'test') {
-        //   window.location.reload()
-        // }
       },
-      game_over() {
+      game_over: () => {
         setGameOver(true);
       },
     };
 
-    function registerEvents() {
-      for (let event in events) {
-        socket.on(event, events[event]);
-      }
-    }
+    registerEvents(socket, events);
 
-    function removeEvents() {
-      for (let event in events) {
-        socket.off(event, events[event]);
-      }
-    }
-
-    registerEvents();
     return () => {
-      // leave room
+      removeEvents(socket, events);
       socket.emit("leave_room");
-      // unbind events
-      removeEvents();
     };
+
   }, [socket, id]);
 
   const handleItemClick = (index) => {
+    console.log("item clicked::", { index });
     if (player.id !== nextPlayer) {
       return;
     }
@@ -126,12 +124,34 @@ export default function Page() {
     }
   };
 
+  const emitStartGame = () => {
+    socket.emit("start");
+  };
+
+  const handleRestart = (gameState) => {
+    const { boardItems, nextPlayer } = gameState;
+    console.log("restart game state --", { boardItems, nextPlayer });
+    setBoardItems(boardItems);
+    setNextPlayer(nextPlayer);
+    setFlippedPair([]);
+    setOpened([]);
+    setGameOver(false);
+  };
+
+
+  console.log('player --', player)
+  
   return (
     <BoardLayout
       menu={
-        <div>
-          <button className="btn" onClick={leaveRoom}>
-            leave room
+        <div style={{ display: "flex", gap: 4 }}>
+          {startGame && (
+            <button className="btn" onClick={leaveRoom}>
+              leave room
+            </button>
+          )}
+          <button className="btn" onClick={() => socket.emit("_gameover")}>
+            game over
           </button>
         </div>
       }
@@ -144,7 +164,15 @@ export default function Page() {
         />
       }
     >
-      {gameOver && <MultiGameResult players={players} player={player} />}
+      {disconnected && <Disconnected />}
+
+      {gameOver && (
+        <MultiGameResult
+          players={players}
+          player={player}
+          onRestart={handleRestart}
+        />
+      )}
 
       {settingUp && (
         <Setup
@@ -154,12 +182,14 @@ export default function Page() {
           roomNotFound={roomNotFound}
           loaded={loaded}
           startCountdown={startCountdown}
-          onStartGame={handleStartGame}
+          onCountdownFinish={handleStartGame}
+          onStartAnyway={emitStartGame}
         />
       )}
       {startGame && (
         <Board
           size={roomInfo.gridSize}
+          theme={roomInfo.theme}
           items={boardItems}
           flipped={flippedPair}
           opened={opened}
