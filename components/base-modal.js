@@ -1,10 +1,12 @@
 import { forwardRef } from "react";
+import { createPortal } from "react-dom";
 
 export const BaseModal = forwardRef(
   (
-    { children, disableCloseOnOverlayClick, open, onOpenChange, beforeContent},
+    { children, disableCloseOnOverlayClick, open, onOpenChange, beforeContent },
     forwardedRef
   ) => {
+    
     const handleOverlayClick = () => {
       if (!disableCloseOnOverlayClick) {
         onOpenChange?.(false);
@@ -13,13 +15,11 @@ export const BaseModal = forwardRef(
 
     if (!open) return null;
 
-    return (
+    return createPortal(
       <div className="modal fixed">
         <div className="overlay fixed" onClick={handleOverlayClick}></div>
         {beforeContent && (
-          <div className="before-content fixed">
-            {beforeContent}
-          </div>
+          <div className="before-content fixed">{beforeContent}</div>
         )}
         <div className="content" ref={forwardedRef}>
           {children}
@@ -44,7 +44,6 @@ export const BaseModal = forwardRef(
           }
 
           .before-content {
-            
           }
           .content {
             position: relative;
@@ -52,11 +51,24 @@ export const BaseModal = forwardRef(
             background: white;
             max-width: 400px;
             width: 100%;
-            padding: 40px;
+            padding: 20px;
             border-radius: 8px;
+            animation: show 0.18s ease;
+          }
+
+          @keyframes show {
+            0% {
+              transform: scale(1.1);
+              opacity: 0;
+            }
+            100% {
+              transform: scale(1);
+              opacity: 1;
+            }
           }
         `}</style>
-      </div>
+      </div>,
+      document.body
     );
   }
 );
