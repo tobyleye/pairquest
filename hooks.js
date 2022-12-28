@@ -2,38 +2,28 @@ import { useState, useEffect } from "react";
 
 export function useTimer(initialState = {}) {
   const [seconds, setSeconds] = useState(0);
-  const [_paused, setPaused] = useState(initialState.paused ?? false);
-
+  const [paused, setPaused] = useState(initialState.paused ?? false);
   useEffect(() => {
     let id;
-    if (!_paused) {
+    if (!paused) {
       id = setTimeout(() => {
         setSeconds((secs) => secs + 1);
       }, 1000);
     }
-
     return () => {
       clearTimeout(id);
     };
-  }, [seconds, _paused]);
-
-  const restart = () => {
-    setSeconds(0);
-    setPaused(false);
-  };
-
-  const pause = () => setPaused(true);
-  const resume = () => setPaused(false);
-
-  // not that expensive if you ask me
-  const formattedTime = secondsToReadable(seconds);
+  }, [seconds, paused]);
 
   return {
     seconds,
-    restart,
-    formattedTime,
-    pause,
-    resume,
+    formattedTime: secondsToReadable(seconds),
+    restart() {
+      setSeconds(0);
+      setPaused(false);
+    },
+    start: () => setPaused(false),
+    stop: () => setPaused(true),
   };
 }
 
