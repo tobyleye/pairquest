@@ -4,8 +4,8 @@ export function ShamelessPlug({ light }) {
   return (
     <div className={clsx("plug", light && "light")}>
       <p>
-        A thing built with ♥ by{" "}
-        <a target="_blank" href="https://twitter.com" rel="noreferrer">
+        A thing built by {" "}
+        <a target="_blank" href="https://oluwatobi.vercel.app" rel="noreferrer">
           Tobi
         </a>
       </p>
