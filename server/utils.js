@@ -23,7 +23,6 @@ const shuffle = (array) => {
   return array;
 };
 
-
 const generateBoardItems = (gridSize, theme) => {
   gridSize = gridSize[0] * gridSize[1]
   const totalPairs = gridSize / 2;
@@ -42,4 +41,4 @@ const generateBoardItems = (gridSize, theme) => {
   return shuffle(items);
 };
 
-export {  generateBoardItems };
+module.exports =  { generateBoardItems };

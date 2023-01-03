@@ -1,36 +1,39 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Board } from "../../components/board";
-import { GameResult } from "../../components/game-result";
-import { useTimer } from "../../hooks";
-import { parseGridSize, generateBoardItems } from "../../utils";
+import { generateBoardItems } from "../../utils";
 import { Hud } from "../../components/single/hud";
-import { BoardLayout } from "../../components/board-layout";
-import { BoardMenu } from "../../components/single/menu";
-import { flipDelay } from "../../constants";
+import { GameScreenLayout } from "../../components/game-screen-layout";
+import { SingleModeMenu } from "../../components/single/menu";
+import { flipDelay, gameOverDelay } from "../../constants";
+import { useSingleModeSettings } from "../../contexts/SingleModeSettings";
+import { SingleModeResult as GameResult } from "../../components/single/result";
+import { useTimer } from "../../hooks/useTimer";
 
 export default function Single() {
   const router = useRouter();
-  const { gridSize, theme: _theme } = router.query;
   const [boardItems, setBoardItems] = useState([]);
-  const [size, setSize] = useState([]);
   const [opened, setOpened] = useState([]);
   const [flippedPair, setFlippedPair] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [moves, setMoves] = useState(0);
-  const [theme, setTheme] = useState();
+
   const timer = useTimer({ paused: false });
 
+  const { settings } = useSingleModeSettings();
+
   useEffect(() => {
-    const size = parseGridSize(gridSize);
-    const boardItems = generateBoardItems(size, _theme);
-    setSize(size);
-    setBoardItems(boardItems);
-    setTheme(_theme);
-  }, [gridSize, _theme]);
+    if (settings) {
+      const boardItems = generateBoardItems(settings.gridSize, settings.theme);
+      setBoardItems(boardItems);
+    } else {
+      router.push("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings]);
 
   function restart() {
-    const items = generateBoardItems(size, _theme);
+    const items = generateBoardItems(settings.gridSize, settings.theme);
     setOpened([]);
     setFlippedPair([]);
     setMoves(0);
@@ -39,16 +42,16 @@ export default function Single() {
     timer.restart();
   }
 
-  const handleItemClick = (index) => {
+  const handleItemClick = (item) => {
     setMoves((moves) => moves + 1);
-    const pair = [...flippedPair, index];
+    const pair = [...flippedPair, item];
     setFlippedPair(pair);
   };
 
   useEffect(() => {
     if (flippedPair.length === 2) {
       setTimeout(() => {
-        let [firstIndex, secondIndex] = flippedPair;
+        const [firstIndex, secondIndex] = flippedPair;
         const firstItem = boardItems[firstIndex];
         const secondItem = boardItems[secondIndex];
         if (firstItem === secondItem) {
@@ -64,16 +67,20 @@ export default function Single() {
       timer.stop();
       setTimeout(() => {
         setGameOver(true);
-        // wait one sec
-      }, 1000);
+      }, gameOverDelay);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardItems.length, opened]);
 
+  if (!settings) {
+    return null;
+  }
+
   return (
-    <BoardLayout
+    <GameScreenLayout
       menu={
-        <BoardMenu
+        <SingleModeMenu
           pauseTimer={timer.stop}
           resumeTimer={timer.start}
           onRestart={restart}
@@ -84,29 +91,22 @@ export default function Single() {
       <div style={{ height: "100%" }}>
         {gameOver && (
           <GameResult
-            showConfetti
-            heading="You did it"
-            subheading="Game over! Here’s how you got on…"
-            results={[
-              { label: "Time Elapsed", value: timer.formattedTime },
-              { label: "Moves Taken", value: `${moves} Moves` },
-            ]}
+            timeElapsed={timer.formattedTime}
+            moves={moves}
             onRestart={restart}
           />
         )}
-
         <Board
-          // wait until the flipped pair is turned before allowing clicks
           disabled={flippedPair.length === 2}
-          size={size}
+          size={settings.gridSize}
           items={boardItems}
           flipped={flippedPair}
           opened={opened}
           onItemClick={handleItemClick}
-          theme={theme}
+          theme={settings.theme}
           key={boardItems.toString()}
         />
       </div>
-    </BoardLayout>
+    </GameScreenLayout>
   );
 }

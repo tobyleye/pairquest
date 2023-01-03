@@ -14,7 +14,7 @@ export function Setup({
   roomNotFound,
   startCountdown,
   onCountdownFinish,
-  onStartAnyway
+  onStartAnyway,
 }) {
   return (
     <BaseModal open={true} disableCloseOnOverlayClick>
@@ -28,7 +28,7 @@ export function Setup({
             <div className="icon">😞</div>
             <p className="text">{`Room not found!`}</p>
             <Link href="/">
-              <button className="btn btn-orange">setup new game</button>
+              <button className="btn btn-primary">setup new game</button>
             </Link>
           </div>
         ) : startCountdown ? (
@@ -66,7 +66,10 @@ export function Setup({
             players.length > 1 &&
             players[0].id === player.id ? (
               <div className="start-block">
-                <button onClick={onStartAnyway} className="btn btn-orange btn-inline start-btn">
+                <button
+                  onClick={onStartAnyway}
+                  className="btn btn-primary btn-inline start-btn"
+                >
                   Start anyway
                 </button>
               </div>
@@ -150,7 +153,7 @@ function Share({ room }) {
 
   const handleShare = async () => {
     const shareData = {
-      text: "Play memory with me",
+      text: "Play memory game with me",
       url: link,
     };
 

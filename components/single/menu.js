@@ -2,34 +2,9 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { BaseModal } from "../base-modal";
 
-function MobileMenu({ onRestart, onResume }) {
-  const router = useRouter();
-  return (
-    <BaseModal open={true}  onOpenChange={() => onResume()}>
-      <div className="btns">
-        <button className="btn btn-orange" onClick={onRestart}>
-          Restart
-        </button>
-        <button className="btn" onClick={() => router.push("/")}>
-          New Game
-        </button>
-        <button className="btn" onClick={onResume}>
-          Resume Game
-        </button>
-      </div>
-      <style jsx>{`
-        .btns {
-          display: grid;
-          gap: 14px;
-          background: white;
-        }
-      `}</style>
-    </BaseModal>
-  );
-}
-
-export function BoardMenu({ onNewGame, onRestart, pauseTimer, resumeTimer }) {
+export function SingleModeMenu({ onRestart, pauseTimer, resumeTimer }) {
   const [showMenu, setShowMenu] = useState(false);
+  const closeMenu = () => showMenu && setShowMenu(false);
 
   const openMenu = () => {
     pauseTimer();
@@ -37,37 +12,39 @@ export function BoardMenu({ onNewGame, onRestart, pauseTimer, resumeTimer }) {
   };
 
   const resume = () => {
-    setShowMenu(false);
+    closeMenu();
     resumeTimer();
   };
 
   const handleRestart = () => {
-    setShowMenu(false);
+    closeMenu();
     onRestart();
   };
+
   const router = useRouter();
 
   return (
     <>
       <div>
-        {showMenu && (
-          <MobileMenu
-            onNewGame={onNewGame}
-            onRestart={handleRestart}
-            onResume={resume}
-          />
-        )}
+        <MobileMenu
+          open={showMenu}
+          onRestart={handleRestart}
+          onResume={resume}
+        />
         <div className="btns">
           <div className="mobile">
-            <button className="btn btn-orange" onClick={openMenu}>
+            <button className="btn btn-primary" onClick={openMenu}>
               menu
             </button>
           </div>
           <div className="desktop">
-            <button className="btn btn-orange" onClick={handleRestart}>
+            <button className="btn btn-primary" onClick={handleRestart}>
               restart
             </button>
-            <button className="btn" onClick={() => router.push("/")}>
+            <button
+              className="btn btn-secondary"
+              onClick={() => router.push("/")}
+            >
               new game
             </button>
           </div>
@@ -102,5 +79,31 @@ export function BoardMenu({ onNewGame, onRestart, pauseTimer, resumeTimer }) {
         `}</style>
       </div>
     </>
+  );
+}
+
+function MobileMenu({ open, onRestart, onResume }) {
+  const router = useRouter();
+  return (
+    <BaseModal open={open} onOpenChange={onResume}>
+      <div className="mobile-menu-btns">
+        <button className="btn btn-primary" onClick={onRestart}>
+          Restart
+        </button>
+        <button className="btn btn-secondary" onClick={() => router.push("/")}>
+          New Game
+        </button>
+        <button className="btn btn-secondary" onClick={onResume}>
+          Resume Game
+        </button>
+      </div>
+      <style jsx>{`
+        .mobile-menu-btns {
+          display: grid;
+          gap: 14px;
+          background: white;
+        }
+      `}</style>
+    </BaseModal>
   );
 }

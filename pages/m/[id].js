@@ -1,24 +1,25 @@
 import { useRouter } from "next/router";
-import { useEffect,  useState } from "react";
+import { useEffect, useState } from "react";
 import { Board } from "../../components/board";
-import { BoardLayout } from "../../components/board-layout";
-import { MultiGameResult } from "../../components/multi/game-result";
+import { GameScreenLayout } from "../../components/game-screen-layout";
+import { MultiModeResult as GameResult } from "../../components/multi/result";
 import { Hud } from "../../components/multi/hud";
 import { useSocket } from "../../contexts/SocketContext";
 import { Setup } from "../../components/multi/setup";
 import { Disconnected } from "../../components/disconnected";
+import { flipDelay, gameOverDelay } from "../../constants";
 
 const registerEvents = (socket, events) => {
   for (let event in events) {
     socket.on(event, events[event]);
   }
-}
+};
 
 const removeEvents = (socket, events) => {
   for (let event in events) {
     socket.off(event, events[event]);
   }
-}
+};
 
 export default function Page() {
   const socket = useSocket();
@@ -39,8 +40,10 @@ export default function Page() {
   const [gameOver, setGameOver] = useState(false);
   const [disconnected, setDisconnected] = useState(false);
 
+  console.log("players --", players);
+
   useEffect(() => {
-    const nextPlayerHandler =(player) => {
+    const nextPlayerHandler = (player) => {
       if (nextPlayer !== null) {
         setTimeout(() => {
           setNextPlayer(player);
@@ -48,13 +51,12 @@ export default function Page() {
       } else {
         setNextPlayer(player);
       }
-    }
-    socket.on("next_player", nextPlayerHandler)
+    };
+    socket.on("next_player", nextPlayerHandler);
     return () => {
       socket.off("next_player", nextPlayerHandler);
     };
   }, [id, socket, nextPlayer]);
-
 
   useEffect(() => {
     socket.emit("join_room", id, (player, roomInfo) => {
@@ -76,8 +78,7 @@ export default function Page() {
         setBoardItems(boardItems);
       },
       update_flipped_pairs: (flippedPair, delay) => {
-        console.log({ flippedPair });
-        let timeout = delay ? 600 : 0;
+        const timeout = delay ? flipDelay : 0;
         setTimeout(() => {
           setFlippedPair(flippedPair);
         }, timeout);
@@ -90,7 +91,9 @@ export default function Page() {
         console.log(`player ${player?.id} left`);
       },
       game_over: () => {
-        setGameOver(true);
+        setTimeout(() => {
+          setGameOver(true);
+        }, gameOverDelay);
       },
     };
 
@@ -100,11 +103,9 @@ export default function Page() {
       removeEvents(socket, events);
       socket.emit("leave_room");
     };
-
   }, [socket, id]);
 
   const handleItemClick = (index) => {
-    console.log("item clicked::", { index });
     if (player.id !== nextPlayer) {
       return;
     }
@@ -129,31 +130,31 @@ export default function Page() {
   };
 
   const handleRestart = (gameState) => {
-    const { boardItems, nextPlayer } = gameState;
-    console.log("restart game state --", { boardItems, nextPlayer });
+    const { boardItems, nextPlayer, players } = gameState;
     setBoardItems(boardItems);
     setNextPlayer(nextPlayer);
+    setPlayers(players);
     setFlippedPair([]);
     setOpened([]);
     setGameOver(false);
   };
 
-
-  console.log('player --', player)
-  
   return (
-    <BoardLayout
+    <GameScreenLayout
       menu={
-        <div style={{ display: "flex", gap: 4 }}>
-          {startGame && (
-            <button className="btn" onClick={leaveRoom}>
+        startGame && (
+          <div style={{ display: "flex", gap: 4 }}>
+            <button className="btn btn-primary" onClick={leaveRoom}>
               leave room
             </button>
-          )}
-          <button className="btn" onClick={() => socket.emit("_gameover")}>
-            game over
-          </button>
-        </div>
+
+            {process.env.NODE_ENV !== "production" && (
+              <button className="btn" onClick={() => socket.emit("_gameover")}>
+                game over
+              </button>
+            )}
+          </div>
+        )
       }
       footer={
         <Hud
@@ -167,7 +168,7 @@ export default function Page() {
       {disconnected && <Disconnected />}
 
       {gameOver && (
-        <MultiGameResult
+        <GameResult
           players={players}
           player={player}
           onRestart={handleRestart}
@@ -196,6 +197,6 @@ export default function Page() {
           onItemClick={handleItemClick}
         />
       )}
-    </BoardLayout>
+    </GameScreenLayout>
   );
 }

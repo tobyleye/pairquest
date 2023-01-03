@@ -26,3 +26,5 @@ export const icons = [
 ];
 
 export const flipDelay = 600
+
+export const gameOverDelay = 300

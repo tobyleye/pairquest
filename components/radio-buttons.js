@@ -1,20 +1,20 @@
-export function RadioGroup({ label, name, options, value, onChange }) {
+export function RadioButtons({ label, name, options, value, onChange }) {
   const handleChange = (e) => {
     onChange(e.target.value);
   };
   return (
-    <div className="radio-group">
-      <p className="label">{label}</p>
+    <div className="radio-btns">
+      <p className="radio-btns-label">{label}</p>
       <div
-        className="options"
+        className="radio-btns-grid"
         style={{
           "--n-options": options.length,
         }}
       >
-        {options.map((opt) => {
+        {options.map((opt,index) => {
           return (
-            <div key={opt.id}>
-              <label className="opt">
+            <div key={index}>
+              <label className="radio-btn">
                 <input
                   type="radio"
                   name={name}
@@ -30,31 +30,31 @@ export function RadioGroup({ label, name, options, value, onChange }) {
       </div>
 
       <style jsx>{`
-        .label {
+        .radio-btns-label {
           color: #7191a5;
           font-weight: 700;
           font-size: 14px;
           margin-bottom: 10px;
         }
 
-        .options {
+        .radio-btns-grid {
           display: grid;
           grid-template-columns: repeat(var(--n-options), 1fr);
           gap: 15px;
         }
 
-        .opt {
+        .radio-btn {
           display: block;
           width: 100%;
           cursor: pointer;
           user-select: none;
         }
 
-        .opt input {
+        .radio-btn input {
           display: none;
         }
 
-        .opt span {
+        .radio-btn span {
           display: block;
           text-align: center;
           background: var(--gray-light);
@@ -63,9 +63,14 @@ export function RadioGroup({ label, name, options, value, onChange }) {
           text-transform: capitalize;
           padding: 12px 15px;
           border-radius: 99px;
+          transition: .2s ease;
         }
 
-        .opt input:checked ~ span {
+        .radio-btn:hover span {
+          background: #6395B8;
+        }
+
+        .radio-btn input:checked ~ span {
           background: var(--gray-dark);
         }
       `}</style>

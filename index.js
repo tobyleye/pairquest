@@ -1,10 +1,8 @@
 const { createServer } = require("http");
-const { parse } = require("url");
 const next = require("next");
 const { Server } = require("socket.io");
-
 const { rooms, createRoom } = require("./server/room");
-
+const { parse } = require("url");
 const port = parseInt(process.env.PORT || "3003", 10);
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -13,6 +11,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = createServer((req, res) => {
     const parsedUrl = parse(req.url, true);
+
     handle(req, res, parsedUrl);
   });
 
@@ -31,24 +30,17 @@ app.prepare().then(() => {
 });
 
 function createSocketHandler(io) {
-  // create test room
-  createRoom({
-    io,
-    id: "public",
-    theme: "numbers",
-    noOfPlayers: 2,
-    gridSize: [4, 4],
-  });
-
   return function (socket) {
-    socket.on("create_room", ({ theme, noOfPlayers, gridSize }, cb) => {
-      const room = createRoom({
+    socket.on("create_room", ({ noOfPlayers, gridSize, theme }, cb) => {
+      const opts = {
         io,
         theme,
         noOfPlayers,
         gridSize,
         host: socket.id,
-      });
+      };
+      console.log('opts:', opts)
+      const room = createRoom(opts);
       cb(room.id);
     });
 

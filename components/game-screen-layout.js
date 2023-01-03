@@ -1,14 +1,13 @@
-export function BoardLayout({  menu, footer, children }) {
+export function GameScreenLayout({ menu, footer, children }) {
   return (
     <div className="screen-layout">
       <div className="screen-container">
-      <header className="header">
-        <h1>memory</h1>
-        {menu}
-      </header>
-      <main className="body">{children}</main>
-      <footer className="footer">{footer}</footer>
-
+        <header className="header">
+          <h1>memory</h1>
+          {menu}
+        </header>
+        <main className="body">{children}</main>
+        <footer className="footer">{footer}</footer>
       </div>
 
       <style jsx>{`

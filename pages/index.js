@@ -1,9 +1,9 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { RadioGroup } from "../components/home/radio-group";
+import { RadioButtons } from "../components/radio-buttons";
 import { useSocket } from "../contexts/SocketContext";
-import { parseGridSize } from "../utils";
 import { ShamelessPlug } from "../components/shameless-plug";
+import { useSingleModeSettings } from "../contexts/SingleModeSettings";
 
 const defaultState = {
   theme: "numbers",
@@ -11,6 +11,10 @@ const defaultState = {
   gridSize: "4x4",
 };
 
+
+const parseGridSize = (size) => {
+  return size.split("x").map(s => Number(s));
+};
 
 export default function Home() {
   const [theme, setTheme] = useState(defaultState.theme);
@@ -20,30 +24,28 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const socket = useSocket();
+  const { setSettings } = useSingleModeSettings();
 
   const startGame = () => {
     let players = Number(totalPlayers);
+ 
     if (players === 1) {
-      router.push({
-        pathname: "/s",
-        query: {
-          gridSize: gridSize,
-          theme: theme,
-        },
+      setSettings({
+        gridSize: parseGridSize(gridSize),
+        theme,
       });
+      router.push('/s')
     } else {
       // multiplayer
       setLoading(true);
       const args = {
         noOfPlayers: parseInt(totalPlayers),
-        theme: theme,
+        theme,
         gridSize: parseGridSize(gridSize),
       };
       socket.emit("create_room", args, (room) => {
         setLoading(false);
-        router.push({
-          pathname: `/m/${room}`,
-        });
+        router.push(`/m/${room}`)
       });
     }
   };
@@ -54,7 +56,7 @@ export default function Home() {
         <h1>Memory</h1>
         <div className="form-container">
           <div className="form-elements">
-            <RadioGroup
+            <RadioButtons
               label="Select Theme"
               name="theme"
               options={[
@@ -65,7 +67,7 @@ export default function Home() {
               onChange={setTheme}
             />
 
-            <RadioGroup
+            <RadioButtons
               label="Number of players"
               name="totalPlayers"
               options={["1", "2", "3", "4"].map((i) => ({
@@ -76,7 +78,7 @@ export default function Home() {
               onChange={setTotalPlayers}
             />
 
-            <RadioGroup
+            <RadioButtons
               label="Grid size"
               name="gridSize"
               options={[
@@ -89,7 +91,7 @@ export default function Home() {
 
             <button
               disabled={loading}
-              className="btn btn-orange"
+              className="btn btn-primary start-btn"
               onClick={startGame}
             >
               {loading ? <Dots /> : `Start Game`}
@@ -127,11 +129,15 @@ export default function Home() {
           display: grid;
           gap: 25px;
         }
+
+        .start-btn {
+          font-size: 20px;
+          font-weight: 700;
+        }
       `}</style>
     </div>
   );
 }
-
 
 function Dots() {
   return (

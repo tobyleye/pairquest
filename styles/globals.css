@@ -19,6 +19,7 @@ a {
 
 :root {
   --orange: #fda214;
+  --orange-fade: #ffb84a;
   --gray-light: #bcced9;
   --gray-dark: #304859;
   --gray-2x-dark: #152938;
@@ -34,15 +35,32 @@ body {
   border: none;
   cursor: pointer;
   width: 100%;
-  height: 42px;
-  padding: 0 20px;
+  padding: 12px 20px;
   white-space: nowrap;
-  background: var(--subtle-gray);
-  color: var(--gray-dark);
   font-weight: 600;
   font-size: 15px;
   border-radius: 99px;
   text-transform: capitalize;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--orange-fade);
+  color: #fcfcfc;
+}
+
+.btn-secondary {
+  background: var(--subtle-gray);
+  color: var(--gray-dark);
+}
+
+.btn-secondary:hover {
+  background: #6395b8;
+  color: #fcfcfc;
 }
 
 .btn:disabled {
@@ -55,11 +73,6 @@ body {
 
 .btn:disabled {
   cursor: auto;
-}
-
-.btn-orange {
-  background: var(--orange);
-  color: white;
 }
 
 .game-result {

@@ -1,25 +1,12 @@
-import { useState, useEffect } from "react";
+import { useCountdown } from "../../hooks/useCountdown";
 
 export function StartCountdown({ onDone }) {
-  const [secs, setSecs] = useState(3);
-  useEffect(() => {
-    let timeout;
-    if (secs > 0) {
-      timeout = setTimeout(() => {
-        setSecs((secs) => secs - 1);
-      }, 1000);
-    } else {
-      onDone();
-    }
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [secs, onDone]);
+  const countdown = useCountdown({ seconds: 3, onDone: onDone });
 
   return (
     <div className="countdown">
       <p>Starting game in </p>
-      <p className="secs">{secs}</p>
+      <p className="secs">{countdown}</p>
       <style jsx>{`
         .countdown {
           text-align: center;

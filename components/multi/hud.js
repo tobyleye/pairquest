@@ -44,7 +44,7 @@ function Player({ player, you, currentTurn }) {
             {you && <div className="player-you">(You)</div>}
           </div>
         </div>
-        <div className="matched-pairs">{player.matchedPairs ?? "0"}</div>
+        <div className="matched-pairs">{player.score ?? "0"}</div>
       </div>
 
       {currentTurn && <div className="current-turn">current turn</div>}
