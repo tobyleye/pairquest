@@ -35,7 +35,8 @@ body {
   border: none;
   cursor: pointer;
   width: 100%;
-  padding: 12px 20px;
+  height: 44px;
+  padding: 0 20px;
   white-space: nowrap;
   font-weight: 600;
   font-size: 15px;

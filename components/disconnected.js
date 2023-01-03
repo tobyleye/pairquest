@@ -8,7 +8,7 @@ export function Disconnected() {
       <div className="disconnected">
       <div className="icon">😞</div>
         <h3 className="message">Oops, you have been disconnected</h3>
-        <button onClick={() => router.push("/")} className="btn btn-orange">
+        <button onClick={() => router.push("/")} className="btn btn-primary">
           Start new game
         </button>
       </div>

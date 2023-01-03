@@ -39,7 +39,6 @@ function createSocketHandler(io) {
         gridSize,
         host: socket.id,
       };
-      console.log('opts:', opts)
       const room = createRoom(opts);
       cb(room.id);
     });

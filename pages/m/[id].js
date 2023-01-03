@@ -126,6 +126,7 @@ export default function Page() {
   };
 
   const emitStartGame = () => {
+    console.log('start gmae oo..')
     socket.emit("start");
   };
 
@@ -184,7 +185,7 @@ export default function Page() {
           loaded={loaded}
           startCountdown={startCountdown}
           onCountdownFinish={handleStartGame}
-          onStartAnyway={emitStartGame}
+          onStart={emitStartGame}
         />
       )}
       {startGame && (

@@ -14,6 +14,7 @@ class Room {
     this.gridSize = gridSize;
     this.playing = false;
     this.nextPlayerIndex = null;
+    this.nextPlayer = null;
     this.flippedPairs = new Set();
     this.opened = [];
   }
@@ -26,25 +27,16 @@ class Room {
     this.flippedPairs = new Set();
   }
 
-  getNextPlayer() {
-    let index = this.nextPlayerIndex;
-    if (typeof index === "number" && index > -1) {
-      return this.players[index];
-    }
-    return null;
-  }
-
   leave(socket) {
     socket.leave(this.id);
-    let playerIndex = this.players.findIndex((p) => p.id === socket.id);
+    const playerIndex = this.players.findIndex((p) => p.id === socket.id);
     if (playerIndex > -1) {
-      let player = this.players[playerIndex];
-      let nextPlayer = this.getNextPlayer();
+      const player = this.players[playerIndex];
       this.players.splice(playerIndex, 1);
       socket.broadcast.emit("player_leave", player);
       this.broadcast("update_players", this.players);
-      if (nextPlayer && nextPlayer.id === socket.id) {
-        this.nextPlayer();
+      if (this.nextPlayer && this.nextPlayer.id === socket.id) {
+        this.setNextPlayer();
       }
     }
 
@@ -54,14 +46,20 @@ class Room {
     }
   }
 
-  nextPlayer() {
-    if (this.nextPlayerIndex === this.players.length - 1) {
+  resetNextPlayer() {
+    this.nextPlayerIndex = 0;
+    this.nextPlayer = this.players[this.nextPlayerIndex];
+    this.broadcast("next_player", this.nextPlayer.id);
+  }
+
+  setNextPlayer() {
+    if (this.nextPlayerIndex >= this.players.length - 1) {
       this.nextPlayerIndex = 0;
     } else {
       this.nextPlayerIndex += 1;
     }
-    const player = this.getNextPlayer();
-    this.broadcast("next_player", player?.id);
+    this.nextPlayer = this.players[this.nextPlayerIndex];
+    this.broadcast("next_player", this.nextPlayer.id);
   }
 
   getPlayer(id) {
@@ -82,7 +80,6 @@ class Room {
         this.resetFlippedPairs();
         const player = this.getPlayer(socket.id);
         player.addScore();
-        console.log("player:", player);
         this.broadcast("update_opened", this.opened);
         this.broadcast("update_flipped_pairs", []);
         this.broadcast("update_players", this.players);
@@ -92,7 +89,7 @@ class Room {
       } else {
         this.resetFlippedPairs();
         this.broadcast("update_flipped_pairs", [], true);
-        this.nextPlayer();
+        this.setNextPlayer();
       }
     }
   }
@@ -105,16 +102,13 @@ class Room {
 
   restart() {
     this.boardItems = generateBoardItems(this.gridSize, this.theme);
-    this.nextPlayerIndex = 0;
-    const nextPlayer = this.getNextPlayer();
-
     this.resetFlippedPairs();
     this.resetPlayersScore();
     this.opened = [];
-    this.broadcast("next_player", nextPlayer.id);
+    this.resetNextPlayer();
     this.broadcast("restart", {
       boardItems: this.boardItems,
-      nextPlayer: nextPlayer.id,
+      nextPlayer: this.nextPlayer.id,
       players: this.players,
     });
   }
@@ -125,9 +119,7 @@ class Room {
   }
 
   startGame() {
-    this.nextPlayerIndex = 0;
-    const nextPlayer = this.getNextPlayer();
-    this.broadcast("next_player", nextPlayer.id);
+    this.resetNextPlayer();
     this.boardItems = generateBoardItems(this.gridSize, this.theme);
     this.broadcast("start_game", {
       boardItems: this.boardItems,
@@ -142,7 +134,7 @@ class Room {
     return 1;
   }
 
-  determineIsHost(socket) {
+  determineHost(socket) {
     if (process.env.NODE_ENV !== "production" && this.players.length === 0) {
       return true;
     }
@@ -155,7 +147,7 @@ class Room {
       return;
     }
 
-    const isHost = this.determineIsHost(socket);
+    const isHost = this.determineHost(socket);
 
     const player = new Player({
       id: socket.id,

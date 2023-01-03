@@ -14,7 +14,7 @@ export function Setup({
   roomNotFound,
   startCountdown,
   onCountdownFinish,
-  onStartAnyway,
+  onStart,
 }) {
   return (
     <BaseModal open={true} disableCloseOnOverlayClick>
@@ -67,7 +67,7 @@ export function Setup({
             players[0].id === player.id ? (
               <div className="start-block">
                 <button
-                  onClick={onStartAnyway}
+                  onClick={onStart}
                   className="btn btn-primary btn-inline start-btn"
                 >
                   Start anyway
@@ -140,8 +140,9 @@ export function Setup({
 
 function Share({ room }) {
   const [copied, setCopied] = useState(false);
-  const link = window.location.href.split(/https?:\/\//).pop();
+  const link = window.location.href
 
+  
   const handleCopy = () => {
     if (!copied) {
       setCopied(true);
@@ -151,8 +152,10 @@ function Share({ room }) {
     }
   };
 
+
   const handleShare = async () => {
     const shareData = {
+      title: '',
       text: "Play memory game with me",
       url: link,
     };
