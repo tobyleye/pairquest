@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { SocketProvider } from "../contexts/SocketContext";
+import { SingleModeSettings } from "../contexts/SingleModeSettings";
+import { ErrorBoundary } from "../components/error-boundry";
 import "../styles/globals.css";
 
 const useRouterReady = () => {
@@ -15,9 +17,13 @@ const useRouterReady = () => {
 function MyApp({ Component, pageProps }) {
   const routerReady = useRouterReady();
   return routerReady ? (
-    <SocketProvider>
-      <Component {...pageProps} />
-    </SocketProvider>
+    <ErrorBoundary>
+      <SocketProvider>
+        <SingleModeSettings>
+          <Component {...pageProps} />
+        </SingleModeSettings>
+      </SocketProvider>
+    </ErrorBoundary>
   ) : null;
 }
 
