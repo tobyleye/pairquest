@@ -28,8 +28,10 @@ export function useTimer(initialState = {}) {
 }
 
 function secondsToReadable(seconds) {
+  const format = (unit) => `${unit}`.padStart(2, "0");
+
   let mm = parseInt(seconds / 60);
   let ss = seconds % 60;
 
-  return `${mm}:${ss}`;
+  return `${format(mm)}:${format(ss)}`;
 }
