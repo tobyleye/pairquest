@@ -17,6 +17,7 @@ class Room {
     this.nextPlayer = null;
     this.flippedPairs = new Set();
     this.opened = [];
+    this.closed = false
   }
 
   broadcast(event, ...args) {
@@ -38,6 +39,12 @@ class Room {
       if (this.nextPlayer && this.nextPlayer.id === socket.id) {
         this.setNextPlayer();
       }
+    }
+
+    if (this.players.length === 0) {
+      // open room if room is empty
+      // this is only useful in dev mode 
+      this.closed = false 
     }
 
     if (this.players.length === 0 && process.env.NODE_ENV === "production") {
@@ -124,6 +131,8 @@ class Room {
     this.broadcast("start_game", {
       boardItems: this.boardItems,
     });
+    // close room to any other connections
+    this.closed = true
   }
 
   getNextPlayerNo() {
@@ -142,7 +151,7 @@ class Room {
   }
 
   join(socket, cb) {
-    if (this.players.length === this.size) {
+    if (this.closed || this.players.length === this.size) {
       cb(null);
       return;
     }
