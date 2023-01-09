@@ -1,8 +1,8 @@
-import { ErrorBoundary as _ErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary  } from "react-error-boundary";
 
-export function ErrorBoundary({ children }) {
+export function AppErrorBoundary({ children }) {
   return (
-    <_ErrorBoundary
+    <ErrorBoundary
       FallbackComponent={
         <div style={{ height: "100vh", display: "grid", placeItems: "center" }}>
           <div style={{ textAlign: "center" }}>
@@ -15,6 +15,6 @@ export function ErrorBoundary({ children }) {
       }
     >
       {children}
-    </_ErrorBoundary>
+    </ErrorBoundary>
   );
 }

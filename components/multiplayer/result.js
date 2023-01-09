@@ -1,6 +1,6 @@
 import { useEffect,  useState } from "react";
 import { useSocket } from "../../contexts/SocketContext";
-import { StartCountdown } from "./start-countdown";
+import { StartCountdown } from "../start-countdown";
 import { useRouter } from "next/router";
 import { useCountdown } from "../../hooks/useCountdown";
 import { GameResultModal, Header, Results } from "../game-result-modal";

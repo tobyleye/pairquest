@@ -1,4 +1,4 @@
-import { useCountdown } from "../../hooks/useCountdown";
+import { useCountdown } from "../hooks/useCountdown";
 
 export function StartCountdown({ onDone }) {
   const countdown = useCountdown({ seconds: 3, onDone: onDone });

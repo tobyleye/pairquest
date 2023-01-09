@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { SocketProvider } from "../contexts/SocketContext";
 import { SingleModeSettings } from "../contexts/SingleModeSettings";
-import { ErrorBoundary } from "../components/error-boundry";
+import { AppErrorBoundary } from "../components/error-boundary";
 import "../styles/globals.css";
 import Head from "next/head";
 
@@ -27,13 +27,13 @@ function MyApp({ Component, pageProps }) {
         />
       </Head>
       {routerReady ? (
-        <ErrorBoundary>
+        <AppErrorBoundary>
           <SocketProvider>
             <SingleModeSettings>
               <Component {...pageProps} />
             </SingleModeSettings>
           </SocketProvider>
-        </ErrorBoundary>
+        </AppErrorBoundary>
       ) : null}
     </div>
   );

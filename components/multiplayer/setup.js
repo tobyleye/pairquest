@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Spinner } from "../spinner";
 import { BiCheck } from "react-icons/bi";
-import { StartCountdown } from "./start-countdown";
+import { StartCountdown } from "../start-countdown";
 
 export function Setup({
   loaded,
