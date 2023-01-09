@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { Board } from "../board";
 import { GameScreenLayout } from "../game-screen-layout";
 import { MultiModeResult as GameResult } from "./result";
-import { Hud } from "../multiplayer/hud";
+import { Hud } from "./hud";
 import { useSocket } from "../../contexts/SocketContext";
 import { Setup } from "./setup";
 import { Disconnected } from "../disconnected";
