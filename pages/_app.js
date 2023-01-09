@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { SocketProvider } from "../contexts/SocketContext";
-import { SingleModeSettings } from "../contexts/SingleModeSettings";
 import { AppErrorBoundary } from "../components/error-boundary";
 import "../styles/globals.css";
 import Head from "next/head";
@@ -29,9 +28,7 @@ function MyApp({ Component, pageProps }) {
       {routerReady ? (
         <AppErrorBoundary>
           <SocketProvider>
-            <SingleModeSettings>
-              <Component {...pageProps} />
-            </SingleModeSettings>
+            <Component {...pageProps} />
           </SocketProvider>
         </AppErrorBoundary>
       ) : null}
