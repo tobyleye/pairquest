@@ -121,15 +121,19 @@ export function useMultiPlayerGame(socket, room, onPlayerLeave) {
     socket.emit("start");
   };
 
-  const handleRestart = (gameState) => {
+  const handleRestart = () => {
+    setGameOver(false);
+  };
+
+  const setNewGameState = (gameState) => {
     const { boardItems, nextPlayer, players } = gameState;
     setBoardItems(boardItems);
     setNextPlayer(nextPlayer);
     setPlayers(players);
     setFlippedPair([]);
     setOpened([]);
-    setGameOver(false);
-  };
+  }
+
 
   return {
     state: {
@@ -153,5 +157,6 @@ export function useMultiPlayerGame(socket, room, onPlayerLeave) {
     leaveRoom,
     handleItemClick,
     handleStartGame,
+    setNewGameState
   };
 }

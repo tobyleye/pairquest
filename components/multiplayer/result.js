@@ -5,12 +5,11 @@ import { useRouter } from "next/router";
 import { useCountdown } from "../../hooks/useCountdown";
 import { GameResultModal, Header, Results } from "../game-result-modal";
 
-export function MultiModeResult({ players, player, onRestart }) {
+export function MultiModeResult({ players, player, onRestart, setNewGameState, }) {
   const [heading, setHeading] = useState("");
   const [results, setResults] = useState([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showGameCountdown, setShowGameCountdown] = useState(false);
-  const [newGameState, setNewGameState] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -93,7 +92,7 @@ export function MultiModeResult({ players, player, onRestart }) {
     return () => {
       socket.off("restart", handleRestart);
     };
-  }, [socket]);
+  }, [socket, setNewGameState]);
 
   const [restartLoading, setRestartLoading] = useState(false);
 
@@ -110,7 +109,7 @@ export function MultiModeResult({ players, player, onRestart }) {
       showConfetti={showConfetti && !showGameCountdown}
     >
       {showGameCountdown ? (
-        <StartCountdown onDone={() => onRestart(newGameState)} />
+        <StartCountdown onDone={onRestart} />
       ) : (
         <div>
           <Header

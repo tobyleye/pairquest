@@ -2,6 +2,8 @@ const Player = require("./player.js");
 const shortid = require("shortid");
 const { generateBoardItems } = require("./utils");
 
+const isProd = () => process.env.NODE_ENV === "production"
+
 class Room {
   constructor({ io, id, noOfPlayers, gridSize, theme, host }) {
     this.theme = theme;
@@ -47,7 +49,7 @@ class Room {
       this.closed = false 
     }
 
-    if (this.players.length === 0 && process.env.NODE_ENV === "production") {
+    if (this.players.length === 0 && isProd()) {
       // clean room
       delete rooms[this.id];
     }
@@ -125,6 +127,12 @@ class Room {
     this.broadcast("game_over");
   }
 
+  closeRoom() {
+    if (isProd()) {
+      this.closed = true
+    }
+  }
+
   startGame() {
     this.resetNextPlayer();
     this.boardItems = generateBoardItems(this.gridSize, this.theme);
@@ -132,7 +140,7 @@ class Room {
       boardItems: this.boardItems,
     });
     // close room to any other connections
-    this.closed = true
+   this.closeRoom()
   }
 
   getNextPlayerNo() {
@@ -144,7 +152,7 @@ class Room {
   }
 
   determineHost(socket) {
-    if (process.env.NODE_ENV !== "production" && this.players.length === 0) {
+    if (!isProd() && this.players.length === 0) {
       return true;
     }
     return socket.id === this.host;

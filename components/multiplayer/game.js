@@ -27,6 +27,7 @@ export function MultiPlayerGame({ room }) {
     leaveRoom,
     handleItemClick,
     handleStartGame,
+    setNewGameState
   } = useMultiPlayerGame(socket, room, handlePlayerLeave);
 
   const handleLeaveRoom = () => {
@@ -71,6 +72,7 @@ export function MultiPlayerGame({ room }) {
         <GameResult
           players={state.players}
           player={state.player}
+          setNewGameState={setNewGameState}
           onRestart={handleRestart}
         />
       )}
