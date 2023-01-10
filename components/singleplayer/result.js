@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { GameResultModal, Results, Header } from "../game-result-modal";
 
-export function SingleModeResult({ moves, timeElapsed, onRestart }) {
+export function SingleModeResult({ moves, timeElapsed, onRestart, onNewGame }) {
   const router = useRouter();
   return (
     <GameResultModal showConfetti>
@@ -17,7 +17,7 @@ export function SingleModeResult({ moves, timeElapsed, onRestart }) {
         <button className="btn btn-primary" onClick={onRestart}>
           Restart
         </button>
-        <button className="btn btn-secondary" onClick={() => router.push("/")}>
+        <button className="btn btn-secondary" onClick={onNewGame}>
           New Game
         </button>
       </div>

@@ -27,6 +27,7 @@ export function SinglePlayerGame({ settings, resetSettings }) {
             timeElapsed={timer.formattedTime}
             moves={state.moves}
             onRestart={restart}
+            onNewGame={resetSettings}
           />
         )}
         <Board
