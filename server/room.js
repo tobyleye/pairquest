@@ -68,7 +68,9 @@ class Room {
       this.nextPlayerIndex += 1;
     }
     this.nextPlayer = this.players[this.nextPlayerIndex];
-    this.broadcast("next_player", this.nextPlayer.id);
+    if (this.nextPlayer) {
+      this.broadcast("next_player", this.nextPlayer.id);
+    }
   }
 
   getPlayer(id) {
