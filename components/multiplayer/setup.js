@@ -140,9 +140,8 @@ export function Setup({
 
 function Share({ room }) {
   const [copied, setCopied] = useState(false);
-  const link = window.location.href
+  const link = window.location.href;
 
-  
   const handleCopy = () => {
     if (!copied) {
       setCopied(true);
@@ -152,11 +151,10 @@ function Share({ room }) {
     }
   };
 
-
   const handleShare = async () => {
     const shareData = {
-      title: '',
-      text: "Play memory game with me",
+      title: "",
+      text: "Play pair quest with me",
       url: link,
     };
 

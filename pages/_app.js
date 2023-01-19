@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <div>
       <Head>
-        <title>Memory game</title>
+        <title>Pair Quest</title>
         <meta
           name="description"
           content="A fun memory game where players try to match pairs."

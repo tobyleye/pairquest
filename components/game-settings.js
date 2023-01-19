@@ -48,7 +48,7 @@ export function GameSettings({ setSettings }) {
   return (
     <div className="game-settings">
       <div className="container">
-        <h1>Memory</h1>
+        <h1>Pair Quest</h1>
         <div className="form-container">
           <div className="form-elements">
             <RadioButtons

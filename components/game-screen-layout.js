@@ -3,7 +3,7 @@ export function GameScreenLayout({ menu, footer, children }) {
     <div className="screen-layout">
       <div className="screen-container">
         <header className="header">
-          <h1>memory</h1>
+          <h1>Pair Quest</h1>
           {menu}
         </header>
         <main className="body">{children}</main>
