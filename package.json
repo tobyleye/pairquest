@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon index.js",
+    "dev": "next dev",
     "build": "next build",
     "lint": "next lint",
-    "start": "NODE_ENV=production node  index.js"
+    "start": "next start"
   },
   "dependencies": {
     "clsx": "^1.2.1",
