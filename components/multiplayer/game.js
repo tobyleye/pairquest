@@ -25,9 +25,9 @@ export function MultiPlayerGame({ room }) {
     emitStartGame,
     handleRestart,
     leaveRoom,
-    handleItemClick,
+    handleTileClick,
     handleStartGame,
-    setNewGameState
+    setNewGameState,
   } = useMultiPlayerGame(socket, room, handlePlayerLeave);
 
   const handleLeaveRoom = () => {
@@ -134,7 +134,7 @@ export function MultiPlayerGame({ room }) {
           items={state.boardItems}
           flipped={state.flippedPair}
           opened={state.opened}
-          onItemClick={handleItemClick}
+          onTileClick={handleTileClick}
         />
       )}
     </GameScreenLayout>

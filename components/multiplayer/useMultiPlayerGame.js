@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flipDelay, gameOverDelay } from "../../constants";
 
 const registerEvents = (socket, events) => {
@@ -28,12 +28,16 @@ export function useMultiPlayerGame(socket, room, onPlayerLeave) {
   const [nextPlayer, setNextPlayer] = useState(null);
   const [gameOver, setGameOver] = useState(false);
   const [disconnected, setDisconnected] = useState(false);
+  const tilesClicked = useRef(0);
+
+  const resetTilesClicked = () => (tilesClicked.current = 0);
 
   useEffect(() => {
     const nextPlayerHandler = (player) => {
       if (nextPlayer !== null) {
         setTimeout(() => {
           setNextPlayer(player);
+          resetTilesClicked();
         }, 600);
       } else {
         setNextPlayer(player);
@@ -70,7 +74,10 @@ export function useMultiPlayerGame(socket, room, onPlayerLeave) {
           setFlippedPair(flippedPair);
         }, timeout);
       },
-      update_opened: (opened) => setOpened(opened),
+      update_opened: (opened) => {
+        setOpened(opened);
+        resetTilesClicked();
+      },
       disconnect: () => {
         setDisconnected(true);
       },
@@ -91,20 +98,33 @@ export function useMultiPlayerGame(socket, room, onPlayerLeave) {
 
   useEffect(() => {
     const player_leave = (player) => {
-        if (startGame && !gameOver) {
-            onPlayerLeave(player)
-        }
-    }
-    socket.on('player_leave', player_leave)
+      if (startGame && !gameOver) {
+        onPlayerLeave(player);
+      }
+    };
+    socket.on("player_leave", player_leave);
     return () => {
-        socket.off('player_leave', player_leave)
-    }
-  }, [socket, onPlayerLeave, startGame, gameOver])
+      socket.off("player_leave", player_leave);
+    };
+  }, [socket, onPlayerLeave, startGame, gameOver]);
 
-  const handleItemClick = (index) => {
+  // useEffect(() => {
+  //   // reset tiles clicked for next play basically
+  //   if (nextPlayer || flippedPair.length === 0) {
+  //     tilesClicked.current = 0;
+  //   }
+  // }, [nextPlayer, flippedPair]);
+
+  const handleTileClick = (index) => {
     if (player.id !== nextPlayer) {
       return;
     }
+    // prevent further clicks
+    if (tilesClicked.current === 2) {
+      return;
+    }
+
+    tilesClicked.current += 1;
     socket.emit("play", { index });
   };
 
@@ -132,8 +152,7 @@ export function useMultiPlayerGame(socket, room, onPlayerLeave) {
     setPlayers(players);
     setFlippedPair([]);
     setOpened([]);
-  }
-
+  };
 
   return {
     state: {
@@ -150,13 +169,13 @@ export function useMultiPlayerGame(socket, room, onPlayerLeave) {
       disconnected,
       players,
       player,
-      nextPlayer
+      nextPlayer,
     },
     emitStartGame,
     handleRestart,
     leaveRoom,
-    handleItemClick,
+    handleTileClick,
     handleStartGame,
-    setNewGameState
+    setNewGameState,
   };
 }

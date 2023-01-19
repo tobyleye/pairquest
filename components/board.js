@@ -1,8 +1,15 @@
 import { icons } from "../constants";
-import { Tile } from "./tile"
+import { Tile } from "./tile";
 
-
-export function Board({ size, items, onItemClick, flipped, opened, theme, disabled }) {
+export function Board({
+  size,
+  items,
+  onTileClick,
+  flipped,
+  opened,
+  theme,
+  disabled,
+}) {
   return (
     <div className="board-container">
       <div
@@ -17,10 +24,10 @@ export function Board({ size, items, onItemClick, flipped, opened, theme, disabl
             <Tile
               flipped={flipped.includes(idx)}
               opened={opened.includes(idx)}
-              onClick={() => onItemClick(idx)}
+              onClick={() => onTileClick(idx)}
               disabled={disabled}
               style={{
-                '--animation-delay': `${idx * .01}s`,
+                "--animation-delay": `${idx * 0.01}s`,
               }}
             >
               {theme === "icons" ? <span>{icons[i]}</span> : i}
