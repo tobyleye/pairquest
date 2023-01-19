@@ -1,27 +1,21 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const SocketContext = createContext(null)
+const SocketContext = createContext(null);
 
-export function SocketProvider({children}) {
-    const [socket, setSocket] = useState(() => io())
+const url = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4001";
 
-    // useEffect(() => {
-    //     const socket = io()
-    //     socket.on('connect', () => {
-    //         setSocket(socket)
-    //     })
-    // }, [])
+export function SocketProvider({ children }) {
+  const [socket, setSocket] = useState(() => io(url));
 
-    return (
-        <SocketContext.Provider value={socket}>
-            {children}
-        </SocketContext.Provider>
-    )
+  useEffect(() => {}, []);
+
+  return (
+    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+  );
 }
 
-
 export function useSocket() {
-    const socket = useContext(SocketContext)
-    return socket
+  const socket = useContext(SocketContext);
+  return socket;
 }

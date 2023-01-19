@@ -5,7 +5,7 @@ import { SinglePlayerGame } from "../components/singleplayer/game";
 export default function Page() {
   const [settings, setSettings] = useState(null);
 
-  const resetSettings = () => setSettings(null)
+  const resetSettings = () => setSettings(null);
 
   return settings ? (
     <SinglePlayerGame settings={settings} resetSettings={resetSettings} />
