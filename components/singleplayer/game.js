@@ -36,7 +36,7 @@ export function SinglePlayerGame({ settings, resetSettings }) {
           items={state.boardItems}
           flipped={state.flippedPair}
           opened={state.opened}
-          onItemClick={handleItemClick}
+          onTileClick={handleItemClick}
           theme={settings.theme}
           key={state.boardItems.toString()}
         />
