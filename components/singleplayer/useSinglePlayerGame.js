@@ -10,7 +10,7 @@ export function useSinglePlayerGame(settings) {
   const [gameOver, setGameOver] = useState(false);
   const [moves, setMoves] = useState(0);
 
-  const timer = useTimer({ paused: true });
+  const timer = useTimer({ paused: false });
 
   useEffect(() => {
     if (settings) {

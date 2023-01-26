@@ -2,34 +2,36 @@ import cx from "clsx";
 
 export function Tile({ children, flipped, opened, onClick, style, disabled }) {
   return (
-    <div
-      onClick={() => {
-        if (!flipped && !opened && !disabled) onClick();
-      }}
-      style={style}
-      className={cx(
-        "tile",
-        { "tile-flipped": flipped },
-        { "tile-flipped tile-opened": opened }
-      )}
-    >
-      <div className="front">{children}</div>
-      <div className="back"></div>
+    <div className="tile-wrapper" style={style}>
+      <div
+        onClick={() => {
+          if (!flipped && !opened && !disabled) onClick();
+        }}
+        className={cx(
+          "tile",
+          { "tile-flipped": flipped },
+          { "tile-flipped tile-opened": opened }
+        )}
+      >
+        <div className="back"></div>
+        <div className="front">{children}</div>
+      </div>
       <style jsx>{`
-        .tile {
-          width: 100%;
+        .tile-wrapper {
+          perspective: 300px;
           height: 100%;
-          border-radius: 99px;
-          display: grid;
-          place-items: center;
-          font-weight: 800;
-          transition: 0.24s ease;
-          color: white;
-          position: relative;
-          perspective: 250px;
+          width: 100%;
           animation: in 0.16s ease;
           animation-delay: var(--animation-delay);
           animation-fill-mode: both;
+        }
+
+        .tile {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          transform-style: preserve-3d;
+          transition: 0.3s ease;
         }
 
         @keyframes in {
@@ -51,28 +53,25 @@ export function Tile({ children, flipped, opened, onClick, style, disabled }) {
           width: 100%;
           height: 100%;
           border-radius: 99px;
-          transition: 0.35s ease;
+          backface-visibility: hidden;
+          transition: 0.25s ease;
+        }
+
+        .front {
+          display: grid;
+          place-items: center;
+          font-weight: 800;
+          transform: rotateY(180deg);
+          background: var(--gray-light);
+          color: white;
         }
 
         .back {
           background: var(--gray-2x-dark);
-          backface-visibility: hidden;
         }
 
-        .front {
-          background: var(--gray-light);
-          color: white;
-          display: grid;
-          place-items: center;
-          transform: rotateY(-180deg);
-        }
-
-        .tile-flipped .back {
+        .tile-flipped {
           transform: rotateY(180deg);
-        }
-
-        .tile-flipped .front {
-          transform: rotateY(0deg);
         }
 
         .tile-opened .front {

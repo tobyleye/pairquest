@@ -1,4 +1,4 @@
-import { flipDelay } from "../../constants";
+import { flipDelay, gameOverDelay } from "../../constants";
 import { useEffect, useRef, useState } from "react";
 
 export function useRoomState(socket, roomId) {
@@ -81,7 +81,9 @@ export function useRoomState(socket, roomId) {
     };
 
     const gameOver = () => {
-      setGameOver(true);
+      setTimeout(() => {
+        setGameOver(true);
+      }, gameOverDelay);
     };
 
     const onRestart = ({ boardItems, nextPlayer, players }) => {
@@ -92,6 +94,10 @@ export function useRoomState(socket, roomId) {
       setFlippedPair([]);
     };
 
+    const onDisconnect = () => {
+      socket.emit("leave_room");
+    };
+
     socket.on("update_players", updatePlayers);
     socket.on("start_game", handleStart);
     socket.on("match_found", matchFound);
@@ -100,6 +106,7 @@ export function useRoomState(socket, roomId) {
     socket.on("update_flipped_pair", updateFlippedPair);
     socket.on("game_over", gameOver);
     socket.on("restart", onRestart);
+    socket.on("disconnect", onDisconnect);
 
     return () => {
       socket.on("update_players", updatePlayers);
@@ -110,6 +117,7 @@ export function useRoomState(socket, roomId) {
       socket.on("update_flipped_pair", updateFlippedPair);
       socket.on("game_over", gameOver);
       socket.on("restart", onRestart);
+      socket.on("disconnect", onDisconnect);
     };
   }, [socket]);
 
