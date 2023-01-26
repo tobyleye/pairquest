@@ -7,7 +7,7 @@ const range = (start, end) => {
 };
 
 // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
-const shuffle = (sequence) =>  {
+const shuffle = (sequence) => {
   const swap = (i, j) => {
     const ith_item = sequence[i];
     const jth_item = sequence[j];
@@ -22,20 +22,22 @@ const shuffle = (sequence) =>  {
   }
 
   return sequence;
-}
+};
 
 const generateBoardItems = (gridSize, theme) => {
   gridSize = gridSize[0] * gridSize[1];
   const totalPairs = gridSize / 2;
-  const rangeSize = theme === "icons" ? 8 : 99;
+  const rangeSize = theme === "icons" ? 9 : 99;
+  console.log({ rangeSize, theme });
   const source = range(0, rangeSize);
+  console.log({ source: [...source] });
   let withReplacement = totalPairs > source.length;
   const items = [];
   for (let i = 0; i < totalPairs; i++) {
     let randomIndex = Math.floor(Math.random() * source.length);
     let randomItem = source[randomIndex];
     items.push(randomItem, randomItem);
-    if (withReplacement) {
+    if (!withReplacement) {
       source.splice(randomIndex, 1);
     }
   }

@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps }) {
         <title>Pair Quest</title>
         <meta
           name="description"
-          content="A fun memory game where players try to match pairs."
+          content="A fun game where players try to match pairs."
         />
       </Head>
       {routerReady ? (

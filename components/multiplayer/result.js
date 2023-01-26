@@ -1,11 +1,11 @@
-import { useEffect,  useState } from "react";
+import { useEffect, useState } from "react";
 import { useSocket } from "../../contexts/SocketContext";
 import { StartCountdown } from "../start-countdown";
 import { useRouter } from "next/router";
 import { useCountdown } from "../../hooks/useCountdown";
 import { GameResultModal, Header, Results } from "../game-result-modal";
 
-export function MultiModeResult({ players, player, onRestart, setNewGameState, }) {
+export function MultiplayerGameResult({ players, player, onRestart }) {
   const [heading, setHeading] = useState("");
   const [results, setResults] = useState([]);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -83,16 +83,16 @@ export function MultiModeResult({ players, player, onRestart, setNewGameState, }
   const socket = useSocket();
 
   useEffect(() => {
-    const handleRestart = (gameState) => {
-      setNewGameState(gameState);
+    const handleRestart = () => {
       setShowGameCountdown(true);
     };
+
     socket.on("restart", handleRestart);
 
     return () => {
       socket.off("restart", handleRestart);
     };
-  }, [socket, setNewGameState]);
+  }, [socket]);
 
   const [restartLoading, setRestartLoading] = useState(false);
 
@@ -109,7 +109,7 @@ export function MultiModeResult({ players, player, onRestart, setNewGameState, }
       showConfetti={showConfetti && !showGameCountdown}
     >
       {showGameCountdown ? (
-        <StartCountdown onDone={onRestart} />
+        <StartCountdown onEnd={onRestart} />
       ) : (
         <div>
           <Header

@@ -7,19 +7,20 @@ import { BiCheck } from "react-icons/bi";
 import { StartCountdown } from "../start-countdown";
 
 export function Setup({
-  loaded,
-  roomInfo,
+  loading,
+  room,
   players,
   player,
-  roomNotFound,
   startCountdown,
   onCountdownFinish,
   onStart,
 }) {
+  const roomNotFound = loading === false && room === null;
+
   return (
     <BaseModal open={true} disableCloseOnOverlayClick>
       <div>
-        {!loaded ? (
+        {loading ? (
           <div className="loading">
             <Spinner size={28} />
           </div>
@@ -32,39 +33,13 @@ export function Setup({
             </Link>
           </div>
         ) : startCountdown ? (
-          <StartCountdown onDone={onCountdownFinish} />
+          <StartCountdown onEnd={onCountdownFinish} />
         ) : (
           <div>
-            <div className="players">
-              <p className="players-heading">Players</p>
-              <ul className="player-list">
-                {Array.from({ length: roomInfo.noOfPlayers }).map((_, i) => {
-                  let p = players[i];
-                  if (p) {
-                    return (
-                      <li className="player" key={`player-${p.id}`}>
-                        Player {p.no} {p.id === player.id ? "(You)" : ""}
-                        <span className="player-status joined">
-                          <BiCheck />
-                        </span>
-                      </li>
-                    );
-                  } else {
-                    return (
-                      <li className="player" key={`player-${i}`}>
-                        Player {i + 1}
-                        <span className="player-status">
-                          <Spinner />
-                        </span>
-                      </li>
-                    );
-                  }
-                })}
-              </ul>
-            </div>
-            {roomInfo.noOfPlayers > 2 &&
+            <Lobby room={room} players={players} player={player} />
+            {room.roomSize > 2 &&
             players.length > 1 &&
-            players[0].id === player.id ? (
+            player.isHost === true ? (
               <div className="start-block">
                 <button
                   onClick={onStart}
@@ -74,7 +49,8 @@ export function Setup({
                 </button>
               </div>
             ) : null}
-            <Share room={roomInfo?.id} />
+
+            {player.isHost === true && <Share />}
           </div>
         )}
       </div>
@@ -99,16 +75,61 @@ export function Setup({
           font-weight: 400;
         }
 
-        .players {
+        .start-block {
+          display: flex;
+          justify-content: center;
           margin-bottom: 14px;
+          margin-top: 20px;
         }
-        .players-heading {
+        .start-btn {
+          padding: 0px 40px;
+          height: 38px;
+        }
+      `}</style>
+    </BaseModal>
+  );
+}
+
+function Lobby({ room, players, player }) {
+  const remainingPlayers = [];
+  const lastPlayerNo = players[players.length - 1]?.no ?? 0;
+  for (let i = 1; i <= room.roomSize - players.length; i++) {
+    remainingPlayers.push({ no: i + lastPlayerNo });
+  }
+
+  return (
+    <div className="lobby">
+      <p className="heading">Waiting for players</p>
+      <ul className="players">
+        {players.map((curPlayer) => {
+          return (
+            <li className="player" key={`player-${curPlayer.id}`}>
+              Player {curPlayer.no} {curPlayer.id === player.id ? "(You)" : ""}
+              <span className="player-status joined">
+                <BiCheck />
+              </span>
+            </li>
+          );
+        })}
+
+        {remainingPlayers.map((player) => (
+          <li className="player" key={`player-${player.no}`}>
+            {`Player ${player.no}`}
+            <span className="player-status">
+              <Spinner />
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <style jsx>{`
+        .heading {
           text-align: center;
           font-size: 20px;
           font-weight: bold;
-          margin-bottom: 8px;
+          margin-bottom: 15px;
         }
-        .player-list {
+        .players {
           display: grid;
           gap: 8px;
         }
@@ -124,23 +145,15 @@ export function Setup({
           color: green;
           font-size: 25px;
         }
-        .start-block {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 14px;
-        }
-        .start-btn {
-          padding: 0px 40px;
-          height: 38px;
-        }
       `}</style>
-    </BaseModal>
+    </div>
   );
 }
 
-function Share({ room }) {
+function Share() {
   const [copied, setCopied] = useState(false);
   const link = window.location.href;
+  const [showShare] = useState(() => "share" in window.navigator);
 
   const handleCopy = () => {
     if (!copied) {
@@ -157,53 +170,61 @@ function Share({ room }) {
       text: "Play pair quest with me",
       url: link,
     };
-
     try {
-      await navigator.share(shareData);
+      await window.navigator.share(shareData);
     } catch (err) {
       console.log("err:", err);
     }
   };
 
   return (
-    <div className="share-ui">
-      <div className="link">{room}</div>
-      <CopyToClipboard text={link} onCopy={handleCopy}>
-        <button>{copied ? "Copied!" : "Copy Link"}</button>
-      </CopyToClipboard>
-      <button className="share" onClick={handleShare}>
-        Share
-      </button>
+    <div>
+      <p className="message">Invite your friends to join you</p>
+      <div className="btns">
+        <CopyToClipboard text={link} onCopy={handleCopy}>
+          <button className="copy-btn">
+            {copied ? "Copied!" : "Copy Link"}
+          </button>
+        </CopyToClipboard>
+        {showShare && (
+          <button className="share-btn" onClick={handleShare}>
+            Share
+          </button>
+        )}
+      </div>
 
       <style jsx>{`
-        .share-ui {
-          color: var(--text-gray);
+        .message {
+          text-align: center;
+          margin-bottom: 10px;
+          margin-top: 20px;
+          color: var(--gray-dark);
+        }
+        .btns {
           position: relative;
-          display: grid;
-          grid-template-columns: 1fr auto auto;
-          gap: 8px;
+          display: flex;
+          gap: 10px;
           align-items: center;
           background: var(--subtle-gray);
-          padding: 14px 16px;
+          padding: 8px 10px;
           border-radius: 4px;
           font-size: 14px;
-          margin-top: 40px;
         }
 
-        .share-ui .link {
-        }
-
-        .share-ui button {
+        .btns button {
+          flex: 1;
           border: none;
           white-space: nowrap;
           background: white;
           box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-          padding: 6px 8px;
-          font-size: 14px;
+          height: 36px;
+          padding: 0 8px;
+          font-size: 16px;
           border-radius: 3px;
+          cursor: pointer;
         }
 
-        .share-ui button.share {
+        .btns .share-btn {
           background: var(--orange);
           color: white;
         }

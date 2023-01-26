@@ -40,7 +40,7 @@ export function GameSettings({ setSettings }) {
       };
       socket.emit("create_room", args, (room) => {
         setLoading(false);
-        router.push(`/m/${room}`);
+        router.push(`/play/${room}`);
       });
     }
   };
