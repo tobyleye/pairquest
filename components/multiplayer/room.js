@@ -7,6 +7,7 @@ import { MultiplayerGameResult } from "../../components/multiplayer/result";
 import { useRoomState } from "./useRoomState";
 import { PlayerDisconnected } from "./player-disconnected";
 import { useRouter } from "next/router";
+import { Disconnected } from "./disconnected";
 
 export function Room({ roomId }) {
   const socket = useSocket();
@@ -79,6 +80,8 @@ export function Room({ roomId }) {
         gameOver={gameOver}
         gameStarted={showBoard === true}
       />
+
+      <Disconnected />
 
       {showBoard && (
         <Board

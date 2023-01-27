@@ -27,39 +27,24 @@ export function PlayerDisconnected({ socket, player, gameStarted, gameOver }) {
     return null;
   }
 
-  const self = disconnectedPlayer.id === player.id;
-
   return (
     <BaseModal open={true}>
       <div className="disconnected">
-        {self ? (
-          <div className="self-disconnected">
-            <div className="icon">😞</div>
-            <h3 className="message">Oops, you have been disconnected</h3>
+        <div className="other-disconnected">
+          <h3>Player {disconnectedPlayer.no} left</h3>
+          <p>Do you want to continue playing?</p>
+          <div className="btns">
+            <button className="btn btn-primary" onClick={reset}>
+              sure
+            </button>
             <button
+              className="btn btn-secondary"
               onClick={() => router.push("/")}
-              className="btn btn-primary"
             >
-              Start new game
+              nah
             </button>
           </div>
-        ) : (
-          <div className="other-disconnected">
-            <h3>Player {disconnectedPlayer.no} left</h3>
-            <p>Do you want to continue playing?</p>
-            <div className="btns">
-              <button className="btn btn-primary" onClick={reset}>
-                sure
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => router.push("/")}
-              >
-                nah
-              </button>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       <style jsx>{`
