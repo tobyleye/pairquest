@@ -31,6 +31,10 @@ body {
   color: var(--gray-2x-dark);
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .btn {
   border: none;
   cursor: pointer;

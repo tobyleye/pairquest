@@ -2,42 +2,40 @@ import { GameScreenLayout } from "../../components/game-screen-layout";
 import { useSocket } from "../../contexts/SocketContext";
 import { Board } from "../../components/board";
 import { Hud } from "../../components/multiplayer/hud";
-import { Setup } from "../../components/multiplayer/setup";
+import { Setup } from "./setup/setup";
 import { MultiplayerGameResult } from "../../components/multiplayer/result";
 import { useRoomState } from "./useRoomState";
 import { PlayerDisconnected } from "./player-disconnected";
-import { useRouter } from "next/router";
 import { Disconnected } from "./disconnected";
+import { LeaveRoom } from "./leave-room";
 
 export function Room({ roomId }) {
   const socket = useSocket();
-  const { state, countdownEnd, handleTileClick, start, handleRestart } =
-    useRoomState(socket, roomId);
 
   const {
+    state,
+    handleTileClick,
+    handleRestart,
+    start,
+    setDisconnectedPlayers,
+  } = useRoomState(socket, roomId);
+
+  const {
+    loading,
     players,
     player,
     nextPlayer,
     room,
-    loading,
-    startCountdown,
     flippedPair,
     opened,
     boardItems,
     showBoard,
     settingUp,
     gameOver,
+    gameStatus,
+    disconnected,
+    disconnectedPlayers,
   } = state;
-
-  const router = useRouter();
-
-  const handleLeaveRoom = () => {
-    const sure = confirm("are you sure");
-    if (sure) {
-      socket.emit("leave_room");
-      router.push("/");
-    }
-  };
 
   return (
     <GameScreenLayout
@@ -49,9 +47,7 @@ export function Room({ roomId }) {
       menu={
         showBoard && (
           <div style={{ display: "flex", gap: 4 }}>
-            <button className="btn btn-primary" onClick={handleLeaveRoom}>
-              leave room
-            </button>
+            <LeaveRoom players={players} />
 
             {process.env.NODE_ENV !== "production" && (
               <button className="btn" onClick={() => socket.emit("_gameover")}>
@@ -66,22 +62,19 @@ export function Room({ roomId }) {
         <Setup
           loading={loading}
           room={room}
-          player={player}
           players={players}
-          startCountdown={startCountdown}
-          onCountdownFinish={countdownEnd}
+          player={player}
           onStart={start}
         />
       )}
 
       <PlayerDisconnected
-        socket={socket}
-        player={player}
-        gameOver={gameOver}
-        gameStarted={showBoard === true}
+        players={disconnectedPlayers}
+        reset={() => setDisconnectedPlayers([])}
+        gameStatus={gameStatus}
       />
 
-      <Disconnected />
+      <Disconnected disconnected={disconnected} />
 
       {showBoard && (
         <Board
