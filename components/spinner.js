@@ -1,13 +1,14 @@
 import React from "react";
 
 export function Spinner({ size = 20, color = "black" }) {
-  const lines = Array(12).fill(null);
+  const lines = Array(8).fill(null);
+  const eachLineAngle = 360 / lines.length;
 
   return (
     <div
       className="spinner"
       style={{
-        "--size": size + "px",
+        "--size": `${size}px`,
         "--color": color,
       }}
     >
@@ -16,8 +17,10 @@ export function Spinner({ size = 20, color = "black" }) {
           <div
             key={i}
             style={{
-              transform: `rotate(${i * 30}deg)`,
-              animationDelay: `${((i - 11) * 0.8) / 12}s`,
+              transform: `rotate(${i * eachLineAngle}deg)`,
+              animationDelay: `${
+                ((i - lines.length - 1) * 0.8) / lines.length
+              }s`,
             }}
           />
         );
@@ -30,12 +33,12 @@ export function Spinner({ size = 20, color = "black" }) {
           display: inline-block;
           position: relative;
         }
-
         .spinner div {
           transform-origin: center;
           position: absolute;
           width: var(--size);
           height: var(--size);
+          /* border: 1px solid red; */
           animation: spinner 0.8s ease infinite;
         }
         .spinner div::after {
@@ -43,12 +46,12 @@ export function Spinner({ size = 20, color = "black" }) {
           display: block;
           position: absolute;
           left: 50%;
-          height: 6px;
-          width: 2px;
+          height: 34%;
+          width: 2.4px;
+          border-radius: 2px;
           background: var(--color);
           transform: translateX(-50%);
         }
-
         @keyframes spinner {
           0% {
             opacity: 1;

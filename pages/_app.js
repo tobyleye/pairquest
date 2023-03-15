@@ -4,6 +4,7 @@ import { SocketProvider } from "../contexts/SocketContext";
 import { AppErrorBoundary } from "../components/error-boundary";
 import "../styles/globals.css";
 import Head from "next/head";
+import { AppStateProvider } from "../contexts/AppStateContext";
 
 const useRouterReady = () => {
   const [ready, setReady] = useState(false);
@@ -27,9 +28,11 @@ function MyApp({ Component, pageProps }) {
       </Head>
       {routerReady ? (
         <AppErrorBoundary>
-          <SocketProvider>
-            <Component {...pageProps} />
-          </SocketProvider>
+          <AppStateProvider>
+            <SocketProvider>
+              <Component {...pageProps} />
+            </SocketProvider>
+          </AppStateProvider>
         </AppErrorBoundary>
       ) : null}
     </div>

@@ -1,27 +1,15 @@
 import { useRouter } from "next/router";
 import { BaseModal } from "../base-modal";
-import { useSocket } from "../../contexts/SocketContext";
-import { useEffect, useState } from "react";
 
-export function Disconnected() {
+export function Disconnected({ disconnected }) {
   const router = useRouter();
 
-  const socket = useSocket();
-
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    const onDisconnect = () => {
-      setShow(true);
-    };
-    socket.on("disconnect", onDisconnect);
-    return () => {
-      socket.off("disconnect", onDisconnect);
-    };
-  }, []);
+  if (!disconnected) {
+    return null;
+  }
 
   return (
-    <BaseModal open={show} disableCloseOnOverlayClick>
+    <BaseModal open disableCloseOnOverlayClick>
       <div className="disconnected">
         <div className="icon">😞</div>
         <h3 className="message">Oops, you have been disconnected</h3>

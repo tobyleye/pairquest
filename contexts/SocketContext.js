@@ -3,10 +3,10 @@ import { io } from "socket.io-client";
 
 const SocketContext = createContext(null);
 
-const url = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4001";
+const url = process.env.NEXT_PUBLIC_BASE_URL || "192.168.0.105:4001";
 
 export function SocketProvider({ children }) {
-  const [socket, setSocket] = useState(() => io(url));
+  const [socket] = useState(() => io(url));
 
   useEffect(() => {}, []);
 

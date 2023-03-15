@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { icons } from "../constants";
 import { Tile } from "./tile";
 
@@ -10,10 +11,15 @@ export function Board({
   theme,
   disabled,
 }) {
+  let sizeStr = size.join("x");
+
   return (
     <div className="board-container">
       <div
-        className="board"
+        className={clsx(
+          "board",
+          { "6x6": "six-by-six", "4x4": "four-by-four" }[sizeStr]
+        )}
         style={{
           "--rows": size[0],
           "--cols": size[1],
@@ -44,16 +50,36 @@ export function Board({
           height: 100%;
           padding: 10px;
         }
+
         .board {
+          --size: calc(min(100vw, 620px) - 20px);
           display: inline-grid;
-          width: 100vw;
-          height: 100vw;
-          max-width: 400px;
-          max-height: 400px;
+          width: var(--size);
+          height: var(--size);
           grid-template-columns: repeat(var(--cols), 1fr);
           grid-template-rows: repeat(var(--rows), 1fr);
           gap: 15px;
-          font-size: 22px;
+          font-size: 18px;
+        }
+
+        .board.four-by-four {
+          font-size: 25px;
+        }
+
+        .board.six-by-six {
+          gap: 8px;
+          font-size: 18px;
+        }
+
+        @media (min-width: 560px) {
+          .board.four-by-four {
+            font-size: 30px;
+          }
+
+          .board.six-by-six {
+            gap: 16px;
+            font-size: 25px;
+          }
         }
       `}</style>
     </div>
