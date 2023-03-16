@@ -1,79 +1,61 @@
-import { useEffect, useState } from "react";
 import { BaseModal } from "../base-modal";
 import { useRouter } from "next/router";
 
-export function PlayerDisconnected({ socket, player, gameStarted, gameOver }) {
-  const [disconnectedPlayer, setDisconnectedPlayer] = useState(null);
+export function PlayerDisconnected({ players, reset, gameStatus }) {
   const router = useRouter();
 
-  useEffect(() => {
-    if (!gameStarted) return;
-    const handlePlayerLeft = (player) => {
-      setDisconnectedPlayer(player);
-    };
-    socket.on("player_left", handlePlayerLeft);
-    return () => {
-      socket.off("player_left", handlePlayerLeft);
-    };
-  });
-
-  const reset = () => {
-    setDisconnectedPlayer(null);
-  };
-
-  const show = disconnectedPlayer !== null && gameOver !== true;
-
-  if (!show) {
+  if (!players || players.length === 0) {
     return null;
   }
+
+  if (gameStatus !== "playing") {
+    return null;
+  }
+
+  const getMessage = () => {
+    if (players.length <= 2) {
+      return (
+        players.map((player) => `Player ${player.no}`).join(" and ") + " left"
+      );
+    } else {
+      return `${players.length} Players left`;
+    }
+  };
+
+  const message = getMessage();
 
   return (
     <BaseModal open={true}>
       <div className="disconnected">
-        <div className="other-disconnected">
-          <h3>Player {disconnectedPlayer.no} left</h3>
-          <p>Do you want to continue playing?</p>
-          <div className="btns">
-            <button className="btn btn-primary" onClick={reset}>
-              sure
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={() => router.push("/")}
-            >
-              nah
-            </button>
-          </div>
+        <h3>{message}</h3>
+        <p>Do you want to continue playing?</p>
+        <div className="btns">
+          <button className="btn btn-primary" onClick={reset}>
+            sure
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => router.push("/")}
+          >
+            uhm, no
+          </button>
         </div>
       </div>
 
       <style jsx>{`
-        .self-disconnected {
+        .disconnected {
           text-align: center;
         }
 
-        .self-disconnected .icon {
-          font-size: 50px;
-          margin-bottom: 8px;
-        }
-
-        .self-disconnected h3 {
-          margin-bottom: 20px;
-        }
-
-        .other-disconnected {
-          text-align: center;
-        }
-
-        .other-disconnected h3 {
+        .disconnected h3 {
           font-size: 22px;
           margin-bottom: 4px;
         }
 
-        .other-disconnected p {
+        .disconnected p {
           margin-bottom: 25px;
         }
-        .other-disconnected .btns {
+        .disconnected .btns {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 8px;

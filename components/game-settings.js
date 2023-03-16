@@ -3,10 +3,12 @@ import { useState } from "react";
 import { RadioButtons } from "./radio-buttons";
 import { useSocket } from "../contexts/SocketContext";
 import { ShamelessPlug } from "./shameless-plug";
+import { useClientId } from "../hooks/useClientId";
+// import { HowToPlay } from "./how-to-play";
 
 const defaultState = {
   theme: "numbers",
-  totalPlayers: "1",
+  numOfPlayers: "1",
   gridSize: "4x4",
 };
 
@@ -16,15 +18,16 @@ const parseGridSize = (size) => {
 
 export function GameSettings({ setSettings }) {
   const [theme, setTheme] = useState(defaultState.theme);
-  const [totalPlayers, setTotalPlayers] = useState(defaultState.totalPlayers);
+  const [numOfPlayers, setNumOfPlayers] = useState(defaultState.numOfPlayers);
   const [gridSize, setGridSize] = useState(defaultState.gridSize);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
   const socket = useSocket();
 
+  const clientId = useClientId();
+
   const startGame = () => {
-    let players = Number(totalPlayers);
+    let players = Number(numOfPlayers);
 
     if (players === 1) {
       setSettings({
@@ -33,12 +36,13 @@ export function GameSettings({ setSettings }) {
       });
     } else {
       setLoading(true);
-      const args = {
-        noOfPlayers: parseInt(totalPlayers),
+      const config = {
         theme,
+        numOfPlayers: parseInt(numOfPlayers),
         gridSize: parseGridSize(gridSize),
+        hostClientId: clientId,
       };
-      socket.emit("create_room", args, (room) => {
+      socket.emit("create_room", config, (room) => {
         setLoading(false);
         router.push(`/play/${room}`);
       });
@@ -48,7 +52,11 @@ export function GameSettings({ setSettings }) {
   return (
     <div className="game-settings">
       <div className="container">
-        <h1>Pair Quest</h1>
+        <header className="header">
+          <h1>Pair Quest</h1>
+          {/* <HowToPlay /> */}
+        </header>
+
         <div className="form-container">
           <div className="form-elements">
             <RadioButtons
@@ -64,13 +72,13 @@ export function GameSettings({ setSettings }) {
 
             <RadioButtons
               label="Number of players"
-              name="totalPlayers"
+              name="numOfPlayers"
               options={["1", "2", "3", "4"].map((i) => ({
                 label: i,
                 value: i,
               }))}
-              value={totalPlayers}
-              onChange={setTotalPlayers}
+              value={numOfPlayers}
+              onChange={setNumOfPlayers}
             />
 
             <RadioButtons
@@ -103,15 +111,20 @@ export function GameSettings({ setSettings }) {
           padding: 0 16px;
           padding-top: 14vh;
         }
+
         .container {
           max-width: 480px;
           margin: auto;
         }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+
         h1 {
           font-size: 30px;
-          margin-bottom: 27px;
-          text-align: center;
           color: white;
+          margin-bottom: 8px;
         }
 
         .form-container {
