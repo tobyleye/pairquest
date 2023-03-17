@@ -32,7 +32,11 @@ export function MultiplayerGameResult({ players, player, onRestart }) {
       winners = Object.values(winners);
       if (winners.length === 1) {
         let winner = winners[0];
-        return `Player ${winner.no} Wins!`;
+        if (winner.id === player.id) {
+          return `You win!`;
+        } else {
+          return `Player ${winner.no} Wins!`;
+        }
       } else {
         return `It's a tie!`;
       }
