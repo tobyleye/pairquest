@@ -4,20 +4,15 @@ import { flipDelay, gameOverDelay } from "../../constants";
 import { useTimer } from "../../hooks/useTimer";
 
 export function useSinglePlayerGame(settings) {
-  const [boardItems, setBoardItems] = useState([]);
+  const [boardItems, setBoardItems] = useState(() =>
+    generateBoardItems(settings.gridSize, settings.theme)
+  );
   const [opened, setOpened] = useState([]);
   const [flippedPair, setFlippedPair] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [moves, setMoves] = useState(0);
 
-  const timer = useTimer({ paused: false });
-
-  useEffect(() => {
-    if (settings) {
-      const boardItems = generateBoardItems(settings.gridSize, settings.theme);
-      setBoardItems(boardItems);
-    }
-  }, [settings]);
+  const timer = useTimer();
 
   function restart() {
     const items = generateBoardItems(settings.gridSize, settings.theme);
@@ -29,33 +24,41 @@ export function useSinglePlayerGame(settings) {
     timer.restart();
   }
 
-  const handleItemClick = (item) => {
-    setMoves((moves) => moves + 1);
-    const pair = [...flippedPair, item];
+  const handleItemClick = (index) => {
+    if (flippedPair.length === 2) return;
+    const pair = [...flippedPair, index];
     setFlippedPair(pair);
+    setMoves((moves) => moves + 1);
   };
 
   useEffect(() => {
-    if (flippedPair.length === 2) {
-      setTimeout(() => {
-        const [firstIndex, secondIndex] = flippedPair;
-        const firstItem = boardItems[firstIndex];
-        const secondItem = boardItems[secondIndex];
-        if (firstItem === secondItem) {
-          setOpened((opened) => [...opened, firstIndex, secondIndex]);
-        }
-        setFlippedPair([]);
-      }, flipDelay);
-    }
+    const checkFlipped = () => {
+      if (flippedPair.length === 2) {
+        setTimeout(() => {
+          const [i, j] = flippedPair;
+          const firstPair = boardItems[i];
+          const secondPair = boardItems[j];
+          if (firstPair === secondPair) {
+            setOpened((opened) => [...opened, i, j]);
+          }
+          setFlippedPair([]);
+        }, flipDelay);
+      }
+    };
+    checkFlipped();
   }, [boardItems, flippedPair]);
 
   useEffect(() => {
-    if (boardItems.length > 0 && opened.length === boardItems.length) {
-      timer.stop();
-      setTimeout(() => {
-        setGameOver(true);
-      }, gameOverDelay);
-    }
+    const checkGameOver = () => {
+      if (boardItems.length > 0 && opened.length === boardItems.length) {
+        timer.stop();
+        setTimeout(() => {
+          setGameOver(true);
+        }, gameOverDelay);
+      }
+    };
+
+    checkGameOver();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardItems.length, opened]);

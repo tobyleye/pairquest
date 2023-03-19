@@ -28,9 +28,7 @@ const generateBoardItems = (gridSize, theme) => {
   gridSize = gridSize[0] * gridSize[1];
   const totalPairs = gridSize / 2;
   const rangeSize = theme === "icons" ? 9 : 99;
-  console.log({ rangeSize, theme });
   const source = range(0, rangeSize);
-  console.log({ source: [...source] });
   let withReplacement = totalPairs > source.length;
   const items = [];
   for (let i = 0; i < totalPairs; i++) {

@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+import { useWindowFocused } from "./useWindowFocused";
 
 export function useTimer(initialState = {}) {
   const [seconds, setSeconds] = useState(0);
   const [paused, setPaused] = useState(initialState.paused ?? false);
+  const windowFocused = useWindowFocused();
+
   useEffect(() => {
     let id;
-    if (!paused) {
+    if (paused === false && windowFocused === true) {
       id = setTimeout(() => {
         setSeconds((secs) => secs + 1);
       }, 1000);
@@ -13,7 +16,7 @@ export function useTimer(initialState = {}) {
     return () => {
       clearTimeout(id);
     };
-  }, [seconds, paused]);
+  }, [seconds, paused, windowFocused]);
 
   return {
     seconds,

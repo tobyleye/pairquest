@@ -7,9 +7,13 @@ export default function Page() {
 
   const resetSettings = () => setSettings(null);
 
-  return settings ? (
-    <SinglePlayerGame settings={settings} resetSettings={resetSettings} />
-  ) : (
-    <GameSettings setSettings={setSettings} />
+  return (
+    <>
+      {settings ? (
+        <SinglePlayerGame settings={settings} resetSettings={resetSettings} />
+      ) : (
+        <GameSettings setSettings={setSettings} />
+      )}
+    </>
   );
 }
