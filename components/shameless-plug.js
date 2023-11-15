@@ -23,9 +23,6 @@ export function ShamelessPlug({ light }) {
           color: var(--subtle-gray);
           transform: translateY(20px);
           opacity: 0;
-          /* animation: plug 0.5s ease;
-          animation-delay: 0.24s;
-          animation-fill-mode: both; */
         }
 
         .plug.show {

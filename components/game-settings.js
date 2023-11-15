@@ -35,6 +35,12 @@ export function GameSettings({ setSettings }) {
         theme,
       });
     } else {
+      if (!socket.connected) {
+        alert(
+          "Connection to the server failed, Sorry :(\nTry the single player mode."
+        );
+        return;
+      }
       setLoading(true);
       const config = {
         theme,
